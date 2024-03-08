@@ -30,8 +30,8 @@ def index(request):
             
     model = genai.GenerativeModel('gemini-pro')
     chat = model.start_chat(history=[])
-    #response_text = model.generate_content("How can i add intergrate gemini API in django?", stream=True)
-    response = chat.send_message("I want to fine tune my Gemini model, how do i do it?")
+    #response_text = model.generate_content("Online jobs in kenya?", stream=True)
+    response = chat.send_message("Online jobs in kenya?")
 
     markdown_text = to_markdown(response.text).data
 
