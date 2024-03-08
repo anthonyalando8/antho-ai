@@ -8,10 +8,10 @@ import google.generativeai as genai
 
 from IPython.display import display
 from IPython.display import Markdown
+from .forms import CreateChatForm
 import markdown
-#from google.colab import userdata
 
-def index(request):
+def index(response):
     def to_markdown(text):
         text = text.replace('•', '  *')
         return Markdown(textwrap.indent(text, '> ', predicate=lambda _: True))
@@ -31,9 +31,34 @@ def index(request):
     model = genai.GenerativeModel('gemini-pro')
     chat = model.start_chat(history=[])
     #response_text = model.generate_content("Online jobs in kenya?", stream=True)
-    response = chat.send_message("Online jobs in kenya?")
 
-    markdown_text = to_markdown(response.text).data
+    if response.method == "POST":
+        form = CreateChatForm(response.POST)
+        if form.is_valid():
+            message = form.cleaned_data['message']
+            model_response = chat.send_message(message)
+    else:
+        form = CreateChatForm()
+    
+    def to_markdown_chat(chats = chat.history):
+        result = None
+        results = []
+        for message in chats:
+            result = to_markdown_web(f'**{message.role}**: {message.parts[0].text}')
+            results.append(result)
+        return results
+    
+    #markdown_text = to_markdown(model_response.text).data
+    
+    return render(response, 'main/chat.html',{"chats": to_markdown_chat(), "form": form})
 
-    return render(request, 'main/chat.html',{"chat":to_markdown_web(response.text)})
+# def submit(response):
+#     #form = None
+#     if response.method == "POST":
+#         form = CreateChatForm(response.POST)
+#         if form.is_valid():
+#             message = form.cleaned_data['Message']
+#     else:
+#         form = CreateChatForm()
+#     return form
     

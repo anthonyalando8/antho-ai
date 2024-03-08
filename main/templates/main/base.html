@@ -6,9 +6,15 @@
     <title>{% block title %}Welcome | Mamapesa {% endblock %}</title>
 </head>
 <body>
+    <nav class="nav">
+        <a href="">Home</a>
+        <a href="/chat">Chat</a>
+        <a href="/mpesa">Mpesa</a>
+        <a href="/airtime">Buy airtime</a>
+    </nav>
     <div class="content" id="content">
         {%block content%}
-        Homepage
+            Homepage
         {%endblock%}
     </div>
 </body>

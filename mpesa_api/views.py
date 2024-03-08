@@ -71,7 +71,7 @@ def validation(request):
     return JsonResponse(dict(context))
 
 def home(request):
-    return HttpResponse("Welcome to MamaPesa!")
+    return HttpResponse("Welcome to MamaPesa Mpesa!")
 
 
 @csrf_exempt
