@@ -35,5 +35,5 @@ def index(request):
 
     markdown_text = to_markdown(response.text).data
 
-    return render(request, 'main/chat.html',{"chat":to_markdown_web(response.text)})
+    return render(request, 'main/chat.html',{"chat":markdown_text})
     
