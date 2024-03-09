@@ -5,20 +5,43 @@ Mamapesa | Chatbot
 {%endblock%}
 
 {%block content%}
-    <div class="chats top">
-        {% for message in chats %}
-            <div>
-                {{ message|safe }}
-            </div>
-        {% endfor %}
+    <div class="chats top" id="chat">
+        
     </div>
     <div class="bottom">
         <div class="form">
-            <form method="post" action="">
+            <form method="post" action="" id="form">
                 {% csrf_token %}
                 {{form.as_p}}
-                <button type="submit">Send Message</button>
+                <button type="submit" id="submit">Send Message</button>
             </form>
+            <script>
+                $(document).ready(function() {
+                    $('#form').submit(function(event) {
+                        // Prevent the default form submission
+                        event.preventDefault();
+            
+                        // Serialize form data
+                        var formData = $(this).serialize();
+            
+                        // Send an AJAX request
+                        $.ajax({
+                            type: 'POST',
+                            url: $(this).attr('action'),
+                            data: formData,
+                            success: function(response) {
+                                // Update the content of a div with the new data
+                                console.log(response);
+                                $('#chat').append(response.html);
+                            },
+                            error: function(error) {
+                                console.log(error);
+                            }
+                        });
+                    });
+                });
+            </script>
+            
         </div>
     </div>
     
