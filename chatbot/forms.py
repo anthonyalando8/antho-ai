@@ -1,5 +1,19 @@
 from django import forms
+from .models import Chat
 
-class CreateChatForm(forms.Form):
+class CreateChatForm(forms.ModelForm):
     #message = forms.CharField(label="Message")
-    message = forms.CharField(widget=forms.Textarea(attrs={"row":"5"}))
+    class Meta:
+        model = Chat
+        fields = ["image", "message"]
+        widgets = {
+            'message': forms.Textarea(attrs={'placeholder': 'Enter message',  'class': 'form-control'}),
+            'image': forms.FileInput(attrs={'class': 'form-control-file image-input'}),
+        }
+    def __init__(self, *args, **kwargs):
+        super(CreateChatForm, self).__init__(*args, **kwargs)
+
+        # Set required attribute for fields (True or False)
+        self.fields['message'].required = False
+        self.fields['message'].label = '' 
+        self.fields['image'].required = False

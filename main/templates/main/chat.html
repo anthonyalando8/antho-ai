@@ -5,44 +5,100 @@ Mamapesa | Chatbot
 {%endblock%}
 
 {%block content%}
-    <div class="chats top" id="chat">
-        
-    </div>
-    <div class="bottom">
-        <div class="form">
-            <form method="post" action="" id="form">
-                {% csrf_token %}
-                {{form.as_p}}
-                <button type="submit" id="submit">Send Message</button>
-            </form>
-            <script>
-                $(document).ready(function() {
-                    $('#form').submit(function(event) {
-                        // Prevent the default form submission
-                        event.preventDefault();
-            
-                        // Serialize form data
-                        var formData = $(this).serialize();
-            
-                        // Send an AJAX request
-                        $.ajax({
-                            type: 'POST',
-                            url: $(this).attr('action'),
-                            data: formData,
-                            success: function(response) {
-                                // Update the content of a div with the new data
-                                console.log(response);
-                                $('#chat').append(response.html);
-                            },
-                            error: function(error) {
-                                console.log(error);
-                            }
-                        });
-                    });
-                });
-            </script>
-            
+<style>
+    .top-section{
+        width: 100%;
+        max-height: 80vh;
+        min-height: 80vh;
+        overflow: auto;
+        word-wrap: break-word;
+    }
+    .bottom-section{
+        width: 100%;
+        min-height: 20vh;
+        max-height: 20vh;
+    }
+    textarea {
+        resize: none; /* Disable manual resizing */
+        overflow-y: auto;
+        max-height: 10vh; /* Set maximum height */
+    }
+    input[type="file"] {
+        display: none;
+    }
+    label{
+        cursor: pointer;
+    }
+</style>
+<div class="container-fluid">
+    <div class="row top-section" id="top">
+        <div class="chats col" id="chat">
+            {{ default|safe }}
         </div>
     </div>
+    <div class="row bottom-section">
+        <div class="form bg-light border rounded m-2 p-3  col">
+            <form method="post" id="form" enctype="multipart/form-data">
+                <div class="row">
+                    {% csrf_token %}
+                    <div class="col-sm-1"> <!-- Adjust the column width for the image field -->
+                        <label for="id_image" class="">
+                            <i class="fa-solid fa-paperclip"></i>
+                        </label>
+                        {{ form.image }}
+                    </div>
+                    <div class="col-sm-10"> <!-- Adjust the column width for the message field -->
+                        {{ form.message }}
+                    </div>
+                    <div class="col-sm-1"> <!-- Adjust the column width for the button -->
+                        <button type="submit" class="btn btn-success btn-block"><i class="fa-solid fa-paper-plane"></i></button> <!-- Use btn-block class to make the button full-width -->
+                    </div>
+                </div>
+            </form>  
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $('#form').submit(function(event) {
+            // Prevent the default form submission
+            event.preventDefault();
+
+            // Serialize form data
+            var formData = new FormData(this);
+            // Reference to the submit button
+            var submitButton = $('#form button[type="submit"]');
+
+            submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+            submitButton.attr("disabled","disabled")
+            // Clear form fields
+            $('#form')[0].reset();
+
+            // Send an AJAX request
+            $.ajax({
+                type: 'POST',
+                url: $(this).attr('action'),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    // Update the content of a div with the new data
+                    console.log(response);
+                    submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
+                    submitButton.removeAttr("disabled")
+                    $('#chat').html(response.html);
+                    $('#top').scrollTop($('#top')[0].scrollHeight);
+
+                },
+                error: function(error) {
+                    submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
+                    submitButton.removeAttr("disabled")
+                    console.log(error);
+                }
+            });
+        });
+    });
+</script>
+    
     
 {%endblock%}
