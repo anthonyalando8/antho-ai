@@ -32,7 +32,8 @@ SECRET_KEY = 'django-insecure-7_0r_pc^w1p5ho9wfw3ep)u8(^grx2486f7824^_)df3dbz$^_
 DEBUG = True
 
 ALLOWED_HOSTS = ['antho-soft-feafcde0b653.herokuapp.com',
-                 '127.0.0.1']
+                 '127.0.0.1',
+                 '192.168.1.102']
 
 
 # Application definition
@@ -45,8 +46,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main',
-    'mpesa_api',
+    #'mpesa_api',
     'chatbot',
+    'vision',
 ]
 
 MIDDLEWARE = [

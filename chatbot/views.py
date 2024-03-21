@@ -6,12 +6,15 @@ from .forms import CreateChatForm
 from .gemini_model import Model
 from django.template.loader import render_to_string
 import markdown
+import re
 
 genai = Model()
 def index(response):
     def to_markdown_web(text):
         text = text.replace('•', '  *')
         indented_text = textwrap.indent(text, '> ', predicate=lambda _: True)
+        #indented_text = textwrap.indent(text, ' ', predicate=lambda line: line.startswith(''))
+        #indented_text = re.sub(r' +$', '\n', indented_text)
         markdown_html = markdown.markdown(indented_text)
         return markdown_html
     
