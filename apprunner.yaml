@@ -4,8 +4,8 @@ build:
   commands:
     build:
       - pip install -r requirements.txt
-  environments:
+  env:
     - DJANGO_SETTINGS_MODULE: "MamaPesa.settings"
     - PYTHONPATH: "."
-start:
+run:
   command: python manage.py runserver 0.0.0.0:8000
