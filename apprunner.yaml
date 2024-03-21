@@ -6,6 +6,6 @@ build:
       - pip install -r requirements.txt
 run:
   runtime-version: 3.7
-  command: python manage.py collectstatic && gunicorn --workers MamaPesa.wsgi
+  command: sh startup.sh
   network:
     port: 8000
