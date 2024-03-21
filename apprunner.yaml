@@ -1,0 +1,9 @@
+version: 1.0
+runtime: python3
+build:
+  command: pip install -r requirements.txt
+  environments:
+    - DJANGO_SETTINGS_MODULE: "MamaPesa.settings"
+    - PYTHONPATH: "."
+start:
+  command: python manage.py runserver 0.0.0.0:8000
