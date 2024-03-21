@@ -4,6 +4,11 @@ build:
   commands:
     build:
       - pip install -r requirements.txt
+  env:
+     - name: DJANGO_SETTINGS_MODULE
+       value: "MamaPesa.settings"
+     - name: PYTHONPATH
+       value: "."
 run:
   runtime-version: 3.7
   command: sh startup.sh
