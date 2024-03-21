@@ -2,7 +2,8 @@ version: 1.0
 runtime: python3
 build:
   commands:
-    - pip install -r requirements.txt
+    build:
+      - pip install -r requirements.txt
   env:
     - name: DJANGO_SETTINGS_MODULE
       value: "MamaPesa.settings"
