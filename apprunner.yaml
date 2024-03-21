@@ -4,10 +4,8 @@ build:
   commands:
     build:
       - pip install -r requirements.txt
-  env:
-    - name: DJANGO_SETTINGS_MODULE
-      value: "MamaPesa.settings"
-    - name: PYTHONPATH
-      value: "."
 run:
-  command: python manage.py runserver 0.0.0.0:8000
+  runtime-version: 3.9
+  command: python manage.py collectstatic && gunicorn --workers MamaPesa.wsgi
+  network:
+    port: 8000
