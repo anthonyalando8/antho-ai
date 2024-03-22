@@ -17,7 +17,7 @@ distro==1.9.0
 dm-tree==0.1.8
 executing==2.0.1
 flatbuffers==24.3.7
-fonttools==4.50.0
+fonttools==4.38.0
 gast==0.5.4
 google-ai-generativelanguage==0.4.0
 google-api-core==2.17.1
