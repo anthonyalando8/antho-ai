@@ -11,7 +11,7 @@ charset-normalizer==3.3.2
 colorama==0.4.6
 contextlib2==21.6.0
 contourpy==1.0.6
-cycler==0.12.1
+cycler==0.11.1
 decorator==5.1.1
 distro==1.9.0
 dm-tree==0.1.8
