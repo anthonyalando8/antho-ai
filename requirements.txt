@@ -14,7 +14,7 @@ contourpy==1.2.0
 cycler==0.12.1
 decorator==5.1.1
 distro==1.9.0
-Django==5.0.2
+Django==4.2.11
 dm-tree==0.1.8
 executing==2.0.1
 flatbuffers==24.3.7
