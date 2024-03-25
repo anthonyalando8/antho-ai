@@ -22,32 +22,30 @@ Mamapesa | Chatbot
         cursor: pointer;
     }
 </style>
-<div class="container-fluid">
-    <div class="row top-section" id="top">
-        <div class="chats col" id="chat">
-            {{ default|safe }}
-        </div>
+<div class="row top-section" id="top">
+    <div class="chats col" id="chat">
+        {{ default|safe }}
     </div>
-    <div class="row bottom-section">
-        <div class="form bg-light border rounded m-2 p-3  col">
-            <form method="post" id="form" enctype="multipart/form-data">
-                <div class="row">
-                    {% csrf_token %}
-                    <div class="col-sm-1"> <!-- Adjust the column width for the image field -->
-                        <label for="id_image" class="">
-                            <i class="fa-solid fa-paperclip"></i>
-                        </label>
-                        {{ form.image }}
-                    </div>
-                    <div class="col-sm-10"> <!-- Adjust the column width for the message field -->
-                        {{ form.message }}
-                    </div>
-                    <div class="col-sm-1"> <!-- Adjust the column width for the button -->
-                        <button type="submit" class="btn btn-success btn-block"><i class="fa-solid fa-paper-plane"></i></button> <!-- Use btn-block class to make the button full-width -->
-                    </div>
+</div>
+<div class="row bottom-section">
+    <div class="form bg-light border rounded p-3  col">
+        <form method="post" id="form" enctype="multipart/form-data">
+            <div class="row">
+                {% csrf_token %}
+                <div class="col-sm-1"> <!-- Adjust the column width for the image field -->
+                    <label for="id_image" class="">
+                        <i class="fa-solid fa-paperclip"></i>
+                    </label>
+                    {{ form.image }}
                 </div>
-            </form>  
-        </div>
+                <div class="col-sm-10"> <!-- Adjust the column width for the message field -->
+                    {{ form.message }}
+                </div>
+                <div class="col-sm-1"> <!-- Adjust the column width for the button -->
+                    <button type="submit" class="btn btn-success btn-block"><i class="fa-solid fa-paper-plane"></i></button> <!-- Use btn-block class to make the button full-width -->
+                </div>
+            </div>
+        </form>  
     </div>
 </div>
 <script>
