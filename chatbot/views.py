@@ -10,7 +10,7 @@ import markdown
 genai = Model()
 def index(response):
     def to_markdown_web(text):
-        #text = text.replace('•', '  *')
+        text = text.replace('•', '  *')
         indented_text = textwrap.indent(text, '> ', predicate=lambda _: True)
         markdown_html = markdown.markdown(indented_text)
         return markdown_html

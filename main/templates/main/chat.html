@@ -13,7 +13,7 @@ Mamapesa | Chatbot
     textarea {
         resize: none; /* Disable manual resizing */
         overflow-y: auto;
-        max-height: 10vh; /* Set maximum height */
+        max-height: 10vh;
     }
     input[type="file"] {
         display: none;
@@ -22,32 +22,30 @@ Mamapesa | Chatbot
         cursor: pointer;
     }
 </style>
-<div class="top-section">
+<div class="position-relative">
+    <div class="top-section">
     <div class="chats" id="chat">
         {{ default }}
     </div>
 </div>
-<div class="row bottom-section">
-    <div class="form bg-light border rounded p-3  col">
+    <div class="bg-light m-2 border rounded">
         <form method="post" id="form" enctype="multipart/form-data">
-            <div class="row">
-                {% csrf_token %}
-                <div class="col-sm-1"> <!-- Adjust the column width for the image field -->
-                    <label for="id_image" class="">
+            {% csrf_token %}
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1">
+                    <label for="id_image">
                         <i class="fa-solid fa-paperclip"></i>
                     </label>
                     {{ form.image }}
-                </div>
-                <div class="col-sm-10"> <!-- Adjust the column width for the message field -->
-                    {{ form.message }}
-                </div>
-                <div class="col-sm-1"> <!-- Adjust the column width for the button -->
-                    <button type="submit" class="btn btn-success btn-block"><i class="fa-solid fa-paper-plane"></i></button> <!-- Use btn-block class to make the button full-width -->
-                </div>
+                </span>
+                {{ form.message }}
+                <button type="submit" class="btn btn-success btn-block"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
         </form>  
     </div>
+
 </div>
+
 <script>
     $(document).ready(function() {
         $('#form').submit(function(event) {

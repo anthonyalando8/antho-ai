@@ -7,7 +7,7 @@ class CreateChatForm(forms.ModelForm):
         model = Chat
         fields = ["image", "message"]
         widgets = {
-            'message': forms.Textarea(attrs={'placeholder': 'Enter message',  'class': 'form-control'}),
+            'message': forms.Textarea(attrs={'placeholder': 'Enter message',  'class': 'form-control', 'aria-describedby':"basic-addon1"}),
             'image': forms.FileInput(attrs={'class': 'form-control-file image-input'}),
         }
     def __init__(self, *args, **kwargs):

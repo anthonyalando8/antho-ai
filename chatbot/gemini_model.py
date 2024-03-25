@@ -31,6 +31,8 @@ class Model:
             #response.resolve()
         
         self.current_chat.extend(chat_image.history[-2:])
+        print(self.current_chat)
+
 
         return self.current_chat
     
