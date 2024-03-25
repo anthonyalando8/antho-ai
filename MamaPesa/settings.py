@@ -33,7 +33,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['antho-soft-feafcde0b653.herokuapp.com',
                  '127.0.0.1',
-                 '192.168.1.102']
+                 '192.168.1.102',
+                 'anthony001.pythonanywhere.com']
 
 
 # Application definition
