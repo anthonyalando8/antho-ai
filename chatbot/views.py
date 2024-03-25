@@ -6,23 +6,20 @@ from .forms import CreateChatForm
 from .gemini_model import Model
 from django.template.loader import render_to_string
 import markdown
-import re
 
 genai = Model()
 def index(response):
     def to_markdown_web(text):
-        text = text.replace('•', '  *')
+        #text = text.replace('•', '  *')
         indented_text = textwrap.indent(text, '> ', predicate=lambda _: True)
-        #indented_text = textwrap.indent(text, ' ', predicate=lambda line: line.startswith(''))
-        #indented_text = re.sub(r' +$', '\n', indented_text)
         markdown_html = markdown.markdown(indented_text)
         return markdown_html
-    
+        
     def to_markdown_chat(chats):
         result = None
         results = []
         for message in chats:
-            result = to_markdown_web(f'**{message.role}**: {message.parts[0].text}')
+            result = to_markdown_web(f'**{message.role}**\n\n {message.parts[0].text}')
             results.append(result)
         return results
 
@@ -41,9 +38,7 @@ def index(response):
 
             return JsonResponse({'html': render_to_string('main/partial.html', {'data': data})})
     else:
-        #JsonResponse({'html': render_to_string('main/partial.html', {'data': to_markdown_chat(genai.get_chats())})})
         form = CreateChatForm()
-        # Render the initial HTML with the form
         
         # Generate the HTML for the partial template with default data
         default_partial_html = render_to_string('main/partial.html', {'data': to_markdown_chat(genai.get_chats())})

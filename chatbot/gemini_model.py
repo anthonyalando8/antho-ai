@@ -17,6 +17,7 @@ class Model:
         response = self.chat_text.send_message(message)
         print(self.chat_text.history)
         self.current_chat.extend(self.chat_text.history[-2:])
+        print(self.current_chat)
         return self.current_chat
     
     def image_model(self, img, message = None,):
