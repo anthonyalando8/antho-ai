@@ -30,7 +30,7 @@ def index(request):
             for chunk in res:
                 accumulatedResponse += chunk.text
                 if first_chunk_dict["value"]:
-                    concat_chunk += f"<div class='border rounded m-2 p-1 bg-light'>{to_markdown_web(f'**{request.user.username}**\n\n{prompt}')}</div><div class='border rounded m-2 p-1 bg-light'>{to_markdown_web(f'**Gemini**\n\n{chunk.text}')}"
+                    concat_chunk += f"<div class='border rounded m-2 p-1 bg-light'>{to_markdown_web(f'**{request.user.username}**{prompt}')}</div><div class='border rounded m-2 p-1 bg-light'>{to_markdown_web(f'**Gemini**{chunk.text}')}"
                     first_chunk_dict["value"] = False
                 else:
                     concat_chunk += f"{to_markdown_web(chunk.text)}"
