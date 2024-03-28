@@ -1,0 +1,26 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+Login
+{% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+<form method="POST" class="form-group">
+    {% csrf_token %}
+    <script type="text/javascript" src="{% static 'js/auth.js' %}"></script>
+    <div class="card mx-auto shadow  m-2 text-dark" id="resize-card">
+        <div class="card-header">Login</div>
+        <div class="card-body p-4">
+            {{form|crispy}}
+            
+        </div>
+        <div class="card-footer">
+            <p>Dont have an account? <a href="{% url 'auth0:register' %}" class="card-link">Sign Up</a></p>
+            <button type="submit" class="btn btn-success">Login</button>
+        </div>
+    </div>
+    
+    
+</form>
+{% endblock %}

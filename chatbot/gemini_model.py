@@ -14,27 +14,26 @@ class Model:
                 print(m.name)
 
     def text_model(self, message="Hello?"):
-        response = self.chat_text.send_message(message)
-        print(self.chat_text.history)
-        self.current_chat.extend(self.chat_text.history[-2:])
-        print(self.current_chat)
-        return self.current_chat
+        response = self.chat_text.send_message(message, stream=True)
+        #self.current_chat.extend(self.chat_text.history[-2:])
+        #print(self.current_chat)
+        #return self.current_chat
+        return response
     
     def image_model(self, img, message = None,):
-        chat_image = self.model_image.start_chat(history=[])
+        #chat_image = self.model_image.start_chat(history=[])
         img_bytes = img.read()
         pil_image = Image.open(io.BytesIO(img_bytes))
         if message == None:
-            response = chat_image.send_message(pil_image)
+            response = self.model_image.generate_content(pil_image, stream=True)
         else:
-            response = chat_image.send_message([message,pil_image])
+            response = self.model_image.generate_content([message,pil_image], stream=True)
             #response.resolve()
         
-        self.current_chat.extend(chat_image.history[-2:])
-        print(self.current_chat)
+        #self.current_chat.extend(chat_image.history[-2:])
 
-
-        return self.current_chat
+        return response
+        
     
     def get_chats(self):
         return self.current_chat

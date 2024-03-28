@@ -1,13 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 import africastalking
 
 # Create your views here.
-def index(response):
-    return render(response, "main/index.html", {})
-
-def home(response):
-    return render(response, 'main/base.html', {})
+def index(request):
+    user = request.user
+    if not user.is_authenticated:
+        return redirect('auth0:login')
+    return render(request, "main/index.html", {'user':user})
 
 def airtime(res):
     

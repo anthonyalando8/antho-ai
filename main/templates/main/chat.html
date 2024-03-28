@@ -1,14 +1,16 @@
 {% extends 'main/index.html'%}
 
-{%block title%}
-Mamapesa | Chatbot
-{%endblock%}
+{% block title %}
+Soft Connect | Chatbot
+{% endblock %}
 
-{%block content%}
+{% block content %}
 <style>
     .top-section{
         overflow: auto;
         word-wrap: break-word;
+        min-height: calc(90vh - 72px)!important;
+        max-height: calc(90vh - 72px)!important;
     }
     textarea {
         resize: none; /* Disable manual resizing */
@@ -21,13 +23,18 @@ Mamapesa | Chatbot
     label{
         cursor: pointer;
     }
+    /* .chats{
+        min-height: calc(100vh - 56px);
+        max-height: calc(100vh - 56px);
+    } */
+    
 </style>
-<div class="position-relative">
-    <div class="top-section">
-    <div class="chats" id="chat">
-        {{ default }}
+<div class="chats h-100">
+    <div class="top-section"id="top">
+        <div  id="chat">
+            {{ default|safe }}
+        </div>
     </div>
-</div>
     <div class="bg-light m-2 border rounded">
         <form method="post" id="form" enctype="multipart/form-data">
             {% csrf_token %}
@@ -39,15 +46,23 @@ Mamapesa | Chatbot
                     {{ form.image }}
                 </span>
                 {{ form.message }}
-                <button type="submit" class="btn btn-success btn-block"><i class="fa-solid fa-paper-plane"></i></button>
+                <button type="submit" id="btn-submit"class="btn btn-success btn-block"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
         </form>  
     </div>
-
 </div>
 
 <script>
     $(document).ready(function() {
+        $('#id_message').keypress(function(event) {
+            // Check if the Enter key is pressed
+            if (event.keyCode === 13 && !event.shiftKey) {
+                event.preventDefault();
+                $('#btn-submit').click();
+            }
+        });
+        var appendedData = '';
+
         $('#form').submit(function(event) {
             // Prevent the default form submission
             event.preventDefault();
@@ -58,7 +73,8 @@ Mamapesa | Chatbot
             var submitButton = $('#form button[type="submit"]');
 
             submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
-            submitButton.attr("disabled","disabled")
+            submitButton.attr("disabled","disabled");
+            var newDiv = $('<div class="border rounded m-2 p-1 bg-light"></div>');
             // Clear form fields
             $('#form')[0].reset();
 
@@ -74,14 +90,25 @@ Mamapesa | Chatbot
                     console.log(response);
                     submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
                     submitButton.removeAttr("disabled")
-                    $('#chat').html(response.html);
-                    $('#top').scrollTop($('#top')[0].scrollHeight);
-
+                     //$('#chat').html(response.html);
+                    //$('#chat').html(response)
+                    //$('#top').scrollTop($('#top')[0].scrollHeight);
+                    appendedData = '';
                 },
                 error: function(error) {
                     submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
                     submitButton.removeAttr("disabled")
                     console.log(error);
+                },
+                xhrFields: {
+                onprogress: function(event) {
+                        // Append the new data as it's being streamed
+                        var newData = event.target.responseText.substring(appendedData.length);
+                        newDiv.append(newData);
+                        $('#chat').append(newData);
+                        $('#top').scrollTop($('#top')[0].scrollHeight);
+                        appendedData += newData;
+                    }
                 }
             });
         });
