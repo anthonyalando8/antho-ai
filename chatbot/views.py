@@ -102,7 +102,7 @@ def index(request):
         content = ""
         if has_chat_history(request.user):
             for chat in default_chat.messages_set.all():
-                content += f"<div class='border rounded m-2 p-1 bg-light'>{to_markdown_web(f'**{request.user.username}**\n\n {chat.message}')}</div><div class='border rounded m-2 p-1 bg-light'>{to_markdown_web(f'**Gemini**\n\n{chat.response}')}</div>"
+                content += f"<div class='border rounded m-2  bg-light'>{to_markdown_web(f'**{request.user.username}** {chat.message}')}</div><div class='border rounded m-2 p-1 bg-light'>{to_markdown_web(f'**Gemini**\n\n{chat.response}')}</div>"
         return HttpResponse(render(request, 'main/chat.html',{"form": form, "default": content}))
 
 def updateHistoryMessage(request, modelResponse, image, prompt):
