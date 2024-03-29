@@ -7,15 +7,24 @@ Soft Connect | Chatbot
 {% block content %}
 <style>
     .top-section{
-        overflow: auto;
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
         word-wrap: break-word;
+        overflow-y: scroll;
         min-height: calc(90vh - 72px)!important;
         max-height: calc(90vh - 72px)!important;
     }
+    .top-section::-webkit-scrollbar {
+        display: none;
+    }
     textarea {
         resize: none; /* Disable manual resizing */
-        overflow-y: auto;
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
         max-height: 10vh;
+    }
+    textarea::-webkit-scrollbar {
+        display: none;
     }
     input[type="file"] {
         display: none;
@@ -29,7 +38,7 @@ Soft Connect | Chatbot
     } */
     
 </style>
-<div class="chats h-100">
+<div class="chats h-100 w-75 mx-auto">
     <div class="top-section"id="top">
         <div  id="chat">
             {{ default|safe }}
