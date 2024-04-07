@@ -1,7 +1,19 @@
-<!-- {% for message in data %}
-    <div class="border rounded m-2 p-1 bg-light">
-        {{ message|safe }}
-    </div>
-{% endfor %} -->
+{% load custom_filters %}
 
-{{ res|safe }}
+{% if isFirst %}
+    <div class="border rounded m-2 p-1 bg-light">{{ prompt | prepend_username:user | convert_to_markdown|safe }}</div>
+    <div class="border rounded m-2 p-1 bg-light" id='{{ message_id }}'>{{ res | prepend_gemini | convert_to_markdown|safe }}</div>
+
+{% elif isError %}
+    <div class="border rounded m-2 p-1 bg-danger text-white">Error occurred!</div>
+
+{% elif isLast %}
+    <!-- Streaming complete -->
+{% else %}
+    <script>
+        var markdownString = "{{ res | convert_to_markdown | safe }}";
+        // Use JSON.stringify to escape special characters and create a valid JavaScript string
+        var escapedMarkdownString = JSON.stringify(markdownString);
+        $("#{{ message_id }}").append(escapedMarkdownString);
+    </script>
+{% endif %}

@@ -5,6 +5,7 @@ Soft Connect | Chatbot
 {% endblock %}
 
 {% block content %}
+{% load custom_filters %}
 <style>
     .top-section{
         -ms-overflow-style: none;  /* IE and Edge */
@@ -41,7 +42,10 @@ Soft Connect | Chatbot
 <div class="chats h-100 w-75 mx-auto">
     <div class="top-section"id="top">
         <div  id="chat">
-            {{ default|safe }}
+            {% for chat in default %}
+                    <div class="border rounded m-2 p-1 bg-light">{{ chat.message | prepend_username:user | convert_to_markdown|safe }}</div>
+                    <div class="border rounded m-2 p-1 bg-light">{{ chat.response | prepend_gemini | convert_to_markdown|safe }}</div>
+            {% endfor%}
         </div>
     </div>
     <div class="bg-light m-2 border rounded">

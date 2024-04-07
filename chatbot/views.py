@@ -15,36 +15,37 @@ genai = Model()
 
 
 def index(request):
-    first_chunk_dict = {'value': True}
 
     user = request.user
     if not user.is_authenticated:
         return redirect('auth0:login')
     
-
-    def stream_response_generator(res, prompt, image):
+    def stream_response_generator(res, prompt, image, message_id):
+        print(message_id)
         accumulatedResponse = ""
-        concat_chunk = ''
-
+        context = {
+            "message_id":message_id,
+            "prompt": prompt,
+            "res": "",
+            "isFirst": True,
+            "isLast": False,
+            "isError": False,
+            "user": user
+        }
         try:
             for chunk in res:
                 accumulatedResponse += chunk.text
-                if first_chunk_dict["value"]:
-                    concat_chunk += f"<div class='border rounded m-2 p-1 bg-light'>{to_markdown_web(f'**{request.user.username}**\n\n {prompt}')}</div><div class='border rounded m-2 p-1 bg-light'>{to_markdown_web(f'**Gemini**\n\n {chunk.text}')}"
-                    first_chunk_dict["value"] = False
-                else:
-                    concat_chunk += f"{to_markdown_web(chunk.text)}"
-
-                html_chunk = render_to_string('main/partial.html', {'res': to_markdown_web(concat_chunk)})
-                concat_chunk = ''
+                context['res'] = chunk.text
+                html_chunk = render_to_string('main/partial.html', context)
+                context['isFirst'] = False
                 yield html_chunk
 
-            # Close the div after processing all chunks
-            html_chunk = render_to_string('main/partial.html', {'res': '</div>'})
-            first_chunk_dict['value'] = True
-
+            context['isLast'] = True
+            context['isFirst'] = False
+            context['res'] = ""
+            # Done processing
+            html_chunk = render_to_string('main/partial.html', context)
             yield html_chunk
-
 
             # Call the updateHistoryMessage function after processing all chunks
             updateHistoryMessage(request, accumulatedResponse, image, prompt)
@@ -53,23 +54,9 @@ def index(request):
             # Handle any exceptions that occur during the loop
             print(f"An error occurred: {e}")
             # Close the div if an error occurs
-            html_chunk = render_to_string('main/partial.html', {'res': '</div><div class"bg-warning text-white">Error occured!</div>'})
-            first_chunk_dict['value'] = True
+            context['isError'] = True
+            html_chunk = render_to_string('main/partial.html', context)
             yield html_chunk
-
-    def to_markdown_web(text):
-        text = text.replace('•', '  *')
-        indented_text = textwrap.indent(text, '> ', predicate=lambda _: True)
-        markdown_html = markdown.markdown(indented_text)
-        return markdown_html
-        
-    def to_markdown_chat(chats):
-        result = None
-        results = []
-        for message in chats:
-            result = to_markdown_web(f'**{message.role}**\n\n {message.parts[0].text}')
-            results.append(result)
-        return results
 
     prompt = ""
     image = None
@@ -82,28 +69,28 @@ def index(request):
             #chats = None
             res = None
             if 'image' in form.cleaned_data and form.cleaned_data['image']:
-                #chats = genai.image_model(form.cleaned_data['image'], message)
                 image = form.cleaned_data['image']
-                res = genai.image_model(image, message)
+                res = genai.image_model(request, image , message)
             else:
-                res = genai.text_model(message)
-                #chats = genai.text_model(message)
-            #data = to_markdown_chat(chats)
+                res = genai.text_model(request,message)
             prompt = message
-            #return JsonResponse({'html': render_to_string('main/partial.html', {'data': data})})
-            return StreamingHttpResponse(stream_response_generator(res,prompt, image))
+            message_id = generate_id(10)
+
+            return StreamingHttpResponse(stream_response_generator(res,prompt, image, message_id))
     else:
+        genai.set_chat(request.user)
         form = CreateChatForm()
-        
-        # Generate the HTML for the partial template with default data
-        #default_partial_html = render_to_string('main/partial.html', {'res': to_markdown_chat(genai.get_chats())})
         default_chat = ChatHistory.objects.filter(user=request.user).first()
 
-        content = ""
+        context = {
+            "user": request.user,
+            "form": form,
+            "default": []
+        }
+        
         if has_chat_history(request.user):
-            for chat in default_chat.messages_set.all():
-                content += f"<div class='border rounded m-2  bg-light'>{to_markdown_web(f'**{request.user.username}**\n\n {chat.message}')}</div><div class='border rounded m-2 p-1 bg-light'>{to_markdown_web(f'**Gemini**\n\n{chat.response}')}</div>"
-        return HttpResponse(render(request, 'main/chat.html',{"form": form, "default": content}))
+            context["default"] = default_chat.messages_set.all()
+        return HttpResponse(render(request, 'main/chat.html',context))
 
 def updateHistoryMessage(request, modelResponse, image, prompt):
         date = datetime.now().date()
