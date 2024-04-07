@@ -33,13 +33,25 @@ Soft Connect | Chatbot
     label{
         cursor: pointer;
     }
-    /* .chats{
-        min-height: calc(100vh - 56px);
-        max-height: calc(100vh - 56px);
-    } */
     
 </style>
-<div class="chats h-100 w-75 mx-auto">
+<div class="h-100 w-75 mx-auto" id="chat-container">
+    <script>
+        $(document).ready(function(){
+            $("#chat-container").addClass("w-75");
+            $(window).resize(function(){
+                var viewportWidth = $(window).width();
+                if (viewportWidth < 800){
+                    $("#chat-container").removeClass("w-75");
+                    $("#chat-container").addClass("w-100");
+                }else{
+                    $("#chat-container").removeClass("w-100");
+                    $("#chat-container").addClass("w-75");
+                }
+            });
+            $(window).resize();
+        });
+    </script>
     <div class="top-section"id="top">
         <div  id="chat">
             {% for chat in default %}
