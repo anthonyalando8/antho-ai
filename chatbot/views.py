@@ -30,7 +30,8 @@ def index(request):
             "isFirst": True,
             "isLast": False,
             "isError": False,
-            "user": user
+            "user": user,
+            "onProgress":True
         }
         try:
             for chunk in res:
@@ -42,13 +43,14 @@ def index(request):
 
             context['isLast'] = True
             context['isFirst'] = False
+            context["onProgress"] = False
             context['res'] = ""
             # Done processing
             html_chunk = render_to_string('main/partial.html', context)
             yield html_chunk
 
             # Call the updateHistoryMessage function after processing all chunks
-            updateHistoryMessage(request, accumulatedResponse, image, prompt)
+            #updateHistoryMessage(request, accumulatedResponse, image, prompt)
 
         except Exception as e:
             # Handle any exceptions that occur during the loop

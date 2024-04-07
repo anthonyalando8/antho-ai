@@ -1,19 +1,17 @@
 {% load custom_filters %}
 
-{% if isFirst %}
+{% if isFirst%}
     <div class="rounded m-2 p-1 text-white">{{ prompt | prepend_username:user | convert_to_markdown|safe }}</div>
     <div class="rounded m-2 p-1 text-white" id='{{ message_id }}'>{{ res | prepend_gemini | convert_to_markdown|safe }}</div>
 
 {% elif isError %}
     <div class="border rounded m-2 p-1 bg-danger text-white">Error occurred!</div>
 
-{% elif isLast %}
+{% elif isLast%}
     <!-- Streaming complete -->
-{% else %}
+{% elif onProgress %}
     <script>
-        var markdownString = "{{ res | convert_to_markdown | safe }}";
-        // Use JSON.stringify to escape special characters and create a valid JavaScript string
-        var escapedMarkdownString = JSON.stringify(markdownString);
-        $("#{{ message_id }}").append(escapedMarkdownString);
+        var markdownString = `{{ res | convert_to_markdown | safe }}`;
+        $("#{{ message_id }}").append(markdownString);
     </script>
 {% endif %}
