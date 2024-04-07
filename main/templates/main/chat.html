@@ -79,6 +79,7 @@ Soft Connect | Chatbot
 
 <script>
     $(document).ready(function() {
+        $('#top').scrollTop($('#top')[0].scrollHeight);
         $('#id_message').keypress(function(event) {
             // Check if the Enter key is pressed
             if (event.keyCode === 13 && !event.shiftKey) {
