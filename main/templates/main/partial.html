@@ -5,7 +5,7 @@
         {{ prompt | prepend_username:user | convert_to_markdown|safe }}
         <div class="m-1">
             {% if image %}
-                <img src="{{ image.url }}" alt="Image message">
+                <img src="{{ image.url }}" class="img-fluid" alt="Image message">
             {% endif %}
         </div>
     </div>

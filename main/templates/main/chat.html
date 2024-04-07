@@ -45,7 +45,7 @@ Soft Connect | Chatbot
                         {{ chat.message | prepend_username:user | convert_to_markdown|safe }}
                         <div class="m-1">
                             {% if chat.image %}
-                                <img src="{{ chat.image.url }}" alt="Image message">
+                                <img src="{{ chat.image.url }}" class="img-fluid" alt="Image message">
                             {% endif %}
                         </div>
                     </div>
