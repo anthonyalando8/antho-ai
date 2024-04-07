@@ -50,7 +50,7 @@ def index(request):
             yield html_chunk
 
             # Call the updateHistoryMessage function after processing all chunks
-            #updateHistoryMessage(request, accumulatedResponse, image, prompt)
+            updateHistoryMessage(request, accumulatedResponse, image, prompt)
 
         except Exception as e:
             # Handle any exceptions that occur during the loop
