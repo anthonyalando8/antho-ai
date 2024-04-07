@@ -1,7 +1,14 @@
 {% load custom_filters %}
 
 {% if isFirst%}
-    <div class="rounded m-2 p-1 text-white">{{ prompt | prepend_username:user | convert_to_markdown|safe }}</div>
+    <div class="rounded m-2 p-1 text-white">
+        {{ prompt | prepend_username:user | convert_to_markdown|safe }}
+        <div class="m-1">
+            {% if image %}
+                <img src="{{ image.url }}" alt="Image message">
+            {% endif %}
+        </div>
+    </div>
     <div class="rounded m-2 p-1 text-white" id='{{ message_id }}'>{{ res | prepend_gemini | convert_to_markdown|safe }}</div>
 
 {% elif isError %}

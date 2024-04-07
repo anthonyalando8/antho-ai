@@ -31,7 +31,8 @@ def index(request):
             "isLast": False,
             "isError": False,
             "user": user,
-            "onProgress":True
+            "onProgress":True,
+            "image": image
         }
         try:
             for chunk in res:

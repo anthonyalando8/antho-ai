@@ -41,7 +41,15 @@ Soft Connect | Chatbot
     <div class="top-section position-relative"id="top">
         <div  id="chat">
             {% for chat in default %}
-                    <div class=" rounded m-2 p-1 text-white">{{ chat.message | prepend_username:user | convert_to_markdown|safe }}</div>
+                    <div class=" rounded m-2 p-1 text-white">
+                        {{ chat.message | prepend_username:user | convert_to_markdown|safe }}
+                        <div class="m-1">
+                            {% if chat.image %}
+                                <img src="{{ chat.image.url }}" alt="Image message">
+                            {% endif %}
+                        </div>
+                    </div>
+                    
                     <div class=" rounded m-2 p-1 text-white">{{ chat.response | prepend_gemini | convert_to_markdown|safe }}</div>
             {% endfor%}
         </div>
