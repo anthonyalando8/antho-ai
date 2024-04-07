@@ -36,31 +36,17 @@ Soft Connect | Chatbot
     
 </style>
 <div class="h-100 w-75 mx-auto" id="chat-container">
-    <script>
-        $(document).ready(function(){
-            $("#chat-container").addClass("w-75");
-            $(window).resize(function(){
-                var viewportWidth = $(window).width();
-                if (viewportWidth < 800){
-                    $("#chat-container").removeClass("w-75");
-                    $("#chat-container").addClass("w-100");
-                }else{
-                    $("#chat-container").removeClass("w-100");
-                    $("#chat-container").addClass("w-75");
-                }
-            });
-            $(window).resize();
-        });
-    </script>
+    
+    
     <div class="top-section position-relative"id="top">
         <div  id="chat">
             {% for chat in default %}
-                    <div class="border rounded m-2 p-1 bg-light">{{ chat.message | prepend_username:user | convert_to_markdown|safe }}</div>
-                    <div class="border rounded m-2 p-1 bg-light">{{ chat.response | prepend_gemini | convert_to_markdown|safe }}</div>
+                    <div class=" rounded m-2 p-1 text-white">{{ chat.message | prepend_username:user | convert_to_markdown|safe }}</div>
+                    <div class=" rounded m-2 p-1 text-white">{{ chat.response | prepend_gemini | convert_to_markdown|safe }}</div>
             {% endfor%}
         </div>
         <div class="position-fixed end-0" style="bottom: 12vh;">
-            <button class="btn bg-transparent"><i class="fa-solid fa-arrow-down"></i></button>
+            <button class="btn bg-transparent" id="adjust-chat-button"><i class="fa-solid fa-arrow-down"></i></button>
         </div>
     </div>
     <div class="bg-light m-2 border rounded">
@@ -79,7 +65,32 @@ Soft Connect | Chatbot
         </form>  
     </div>
 </div>
+<script>
+    function adjustChatContainer() {
+        $("#chat-container").addClass("w-75");
+        $(window).resize(function(){
+            var viewportWidth = $(window).width();
+            if (viewportWidth < 800){
+                $("#chat-container").removeClass("w-75");
+                $("#chat-container").addClass("w-100");
+            }else{
+                $("#chat-container").removeClass("w-100");
+                $("#chat-container").addClass("w-75");
+            }
+        });
+        $(window).resize();
+    }
 
+    // Call the function when the page loads
+    $(document).ready(function(){
+        adjustChatContainer();
+        $("#adjust-chat-button").click(function() {
+            adjustChatContainer();
+        });
+    });
+
+    
+</script>
 <script>
     $(document).ready(function() {
         $('#top').animate({

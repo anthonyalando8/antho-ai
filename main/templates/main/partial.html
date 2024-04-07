@@ -1,8 +1,8 @@
 {% load custom_filters %}
 
 {% if isFirst %}
-    <div class="border rounded m-2 p-1 bg-light">{{ prompt | prepend_username:user | convert_to_markdown|safe }}</div>
-    <div class="border rounded m-2 p-1 bg-light" id='{{ message_id }}'>{{ res | prepend_gemini | convert_to_markdown|safe }}</div>
+    <div class="border rounded m-2 p-1">{{ prompt | prepend_username:user | convert_to_markdown|safe }}</div>
+    <div class="border rounded m-2 p-1" id='{{ message_id }}'>{{ res | prepend_gemini | convert_to_markdown|safe }}</div>
 
 {% elif isError %}
     <div class="border rounded m-2 p-1 bg-danger text-white">Error occurred!</div>
