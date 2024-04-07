@@ -52,12 +52,15 @@ Soft Connect | Chatbot
             $(window).resize();
         });
     </script>
-    <div class="top-section"id="top">
+    <div class="top-section position-relative"id="top">
         <div  id="chat">
             {% for chat in default %}
                     <div class="border rounded m-2 p-1 bg-light">{{ chat.message | prepend_username:user | convert_to_markdown|safe }}</div>
                     <div class="border rounded m-2 p-1 bg-light">{{ chat.response | prepend_gemini | convert_to_markdown|safe }}</div>
             {% endfor%}
+        </div>
+        <div class="position-fixed end-0" style="bottom: 12vh;">
+            <button class="btn bg-transparent"><i class="fa-solid fa-arrow-down"></i></button>
         </div>
     </div>
     <div class="bg-light m-2 border rounded">
@@ -79,7 +82,9 @@ Soft Connect | Chatbot
 
 <script>
     $(document).ready(function() {
-        $('#top').scrollTop($('#top')[0].scrollHeight);
+        $('#top').animate({
+            scrollTop: $('#top')[0].scrollHeight
+        }, 'slow');
         $('#id_message').keypress(function(event) {
             // Check if the Enter key is pressed
             if (event.keyCode === 13 && !event.shiftKey) {
