@@ -1,24 +1,27 @@
 {% load custom_filters %}
 
-{% if isFirst%}
+{% if isFirst %}
     <div class="rounded m-2 p-1 text-white">
         {{ prompt | prepend_username:user | convert_to_markdown|safe }}
         <div class="m-1">
             {% if image %}
-                <img src="{{ image.url }}" class="img-fluid" alt="Image message">
+                <img src="{{ image.url }}" class="img-fluid rounded " alt="Image message">
             {% endif %}
         </div>
     </div>
     <div class="rounded m-2 p-1 text-white" id='{{ message_id }}'>{{ res | prepend_gemini | convert_to_markdown|safe }}</div>
 
 {% elif isError %}
-    <div class="border rounded m-2 p-1 bg-danger text-white">Error occurred!</div>
+    <div class="border rounded m-2 p-1 bg-danger text-white">Error occurred! Refresh this chat</div>
+    <script>
+        $("#chat-form").addClass("d-none");
+    </script>
 
-{% elif isLast%}
-    <!-- Streaming complete -->
 {% elif onProgress %}
     <script>
         var markdownString = `{{ res | convert_to_markdown | safe }}`;
         $("#{{ message_id }}").append(markdownString);
     </script>
+{% elif isLast%}
+<!-- Streaming complete -->
 {% endif %}

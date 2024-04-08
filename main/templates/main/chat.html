@@ -45,7 +45,7 @@ Soft Connect | Chatbot
                         {{ chat.message | prepend_username:user | convert_to_markdown|safe }}
                         <div class="m-1">
                             {% if chat.image %}
-                                <img src="{{ chat.image.url }}" class="img-fluid" alt="Image message">
+                                <img src="{{ chat.image.url }}" class="img-fluid rounded " alt="Image message">
                             {% endif %}
                         </div>
                     </div>
@@ -57,7 +57,7 @@ Soft Connect | Chatbot
             <button class="btn btn-success text-white m-2 bg-transparent" id="adjust-chat-button"><i class="fa-solid fa-arrow-down"></i></button>
         </div>
     </div>
-    <div class="bg-light m-2 border rounded">
+    <div class="bg-light m-2 border rounded" id="chat-form">
         <form method="post" id="form" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="input-group">
