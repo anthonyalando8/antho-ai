@@ -15,7 +15,9 @@ genai = Model()
 
 
 def index(request):
-
+    user_agent = request.META.get('HTTP_USER_AGENT', '')
+    print(user_agent)
+    
     user = request.user
     if not user.is_authenticated:
         return redirect('auth0:login')
@@ -36,11 +38,16 @@ def index(request):
         }
         try:
             for chunk in res:
-                accumulatedResponse += chunk.text
-                context['res'] = chunk.text
+                #try:
+                new_chunk = chunk.text
+                accumulatedResponse += new_chunk
+                context['res'] = accumulatedResponse
                 html_chunk = render_to_string('main/partial.html', context)
                 context['isFirst'] = False
                 yield html_chunk
+                #except Exception as e:
+                    #print(f'{type(e).__name__}: {e}')
+            
 
             context['isLast'] = True
             context['isFirst'] = False
@@ -77,7 +84,7 @@ def index(request):
             else:
                 res = genai.text_model(request,message)
             prompt = message
-            message_id = generate_id(10)
+            message_id = generate_id(20)
 
             return StreamingHttpResponse(stream_response_generator(res,prompt, image, message_id))
     else:

@@ -1,4 +1,5 @@
 import google.generativeai as genai
+from google.generativeai.types import HarmCategory, HarmBlockThreshold
 from PIL import Image
 import io
 
@@ -10,6 +11,12 @@ class Model:
         self.current_chat = []
         self.text_models = {}
         self.chat_text = self.model_text.start_chat(history=self.current_chat)
+        self.safety_settings ={
+            HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+            HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
+            HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
+            HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE
+        }
         for m in genai.list_models():
             if 'generateContent' in m.supported_generation_methods:
                 print(m.name)
@@ -24,13 +31,14 @@ class Model:
         img_bytes = img.read()
         pil_image = Image.open(io.BytesIO(img_bytes))
         if message == None:
-            response = self.model_image.generate_content(pil_image, stream=True)
+            response = self.model_image.generate_content(pil_image, stream=True, safety_settings=self.safety_settings)
         else:
-            response = self.model_image.generate_content([message,pil_image], stream=True)
+            response = self.model_image.generate_content([message,pil_image], stream=True, safety_settings=self.safety_settings)
         
         return response
         
     
     def set_chat(self, user):
         self.text_models[user.username] = self.model_text.start_chat(history=self.current_chat)
+        print(self.text_models)
         return self.text_models[user.username]

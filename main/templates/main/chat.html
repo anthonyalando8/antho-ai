@@ -41,7 +41,7 @@ Soft Connect | Chatbot
     <div class="top-section position-relative"id="top">
         <div  id="chat">
             {% for chat in default %}
-                    <div class=" rounded m-2 p-1 text-white">
+                    <div class=" rounded m-2 p-1 text-light">
                         {{ chat.message | prepend_username:user | convert_to_markdown|safe }}
                         <div class="m-1">
                             {% if chat.image %}
@@ -50,11 +50,11 @@ Soft Connect | Chatbot
                         </div>
                     </div>
                     
-                    <div class=" rounded m-2 p-1 text-white">{{ chat.response | prepend_gemini | convert_to_markdown|safe }}</div>
+                    <div class=" rounded m-2 p-1 text-light">{{ chat.response | prepend_gemini | convert_to_markdown|safe }}</div>
             {% endfor%}
         </div>
         <div class="position-fixed end-0" style="bottom: 98px;">
-            <button class="btn btn-success text-white m-2 bg-transparent" id="adjust-chat-button"><i class="fa-solid fa-arrow-down"></i></button>
+            <button class="btn btn-success text-light m-2 bg-transparent" id="adjust-chat-button"><i class="fa-solid fa-arrow-down"></i></button>
         </div>
     </div>
     <div class="bg-light m-2 border rounded" id="chat-form">
@@ -140,7 +140,7 @@ Soft Connect | Chatbot
                     console.log(response);
                     submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
                     submitButton.removeAttr("disabled")
-                     //$('#chat').html(response.html);
+                    //$('#chat').html(response.html);
                     //$('#chat').html(response)
                     //$('#top').scrollTop($('#top')[0].scrollHeight);
                     appendedData = '';
