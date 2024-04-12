@@ -39,6 +39,7 @@ class Model:
         
     
     def set_chat(self, user):
-        self.text_models[user.username] = self.model_text.start_chat(history=self.current_chat)
+        if user.username not in self.text_models:
+            self.text_models[user.username] = self.model_text.start_chat(history=self.current_chat)
         print(self.text_models)
         return self.text_models[user.username]

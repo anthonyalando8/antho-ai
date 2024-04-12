@@ -1,10 +1,23 @@
 {% extends 'main/base.html' %}
 
-{% block title %}
-Login
-{% endblock %}
+
 {% load crispy_forms_tags %}
 {% load static %}
+{% block title %}
+Login | SoftConnect
+{% endblock %}
+{% block titleOg %}
+Login | SoftConnect
+{% endblock %}
+{% block titleWeb %}
+Login | SoftConnect
+{% endblock %}
+{% block descriptionWeb %}
+Login to access your account on SoftConnect and unlock the full potential of our AI-driven services. Securely authenticate and gain instant access to personalized features, including chat sessions, user preferences and more.
+{% endblock %}
+{% block descriptionOg %}
+Login to access your account on SoftConnect and unlock the full potential of our AI-driven services. Securely authenticate and gain instant access to personalized features, including chat sessions, user preferences and more.
+{% endblock %}
 {% block content %}
 <form method="POST" class="form-group">
     {% csrf_token %}

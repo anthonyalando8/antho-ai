@@ -1,10 +1,22 @@
 {% extends 'main/base.html' %}
-{% block title %}
-    Register
-{% endblock %}
+
 {% load crispy_forms_tags %}
 {% load static %}
-
+{% block title %}
+    Sign Up | SoftConnect
+{% endblock %}
+{% block titleWeb %}
+    Sign Up | SoftConnect
+{% endblock %}
+{% block titleOg %}
+    Sign Up | SoftConnect
+{% endblock %}
+{% block descriptionWeb %}
+Join the community at SoftConnect by creating your account today. Registration is quick, easy and free! Sign Up to experience the power of our cutting-edge AI technology, engage in dynamic conversations, and access exclusive features
+{% endblock %}
+{% block descriptionOg %}
+Join the community at SoftConnect by creating your account today. Registration is quick, easy and free! Sign Up to experience the power of our cutting-edge AI technology, engage in dynamic conversations, and access exclusive features
+{% endblock %}
 {% block content %}
 <script type="text/javascript" src="{% static 'js/auth.js' %}"></script>
     <form method="POST" class="form-group">
