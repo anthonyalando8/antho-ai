@@ -15,7 +15,7 @@ def convert_to_markdown(text):
 
 @register.filter(name='prepend_gemini')
 def prepend_gemini(value):
-    return f"**Gemini**\n\n {value}"
+    return f"**SoftChat**\n\n {value}"
 
 @register.filter(name='prepend_username')
 def prepend_username(value, user):
