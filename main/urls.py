@@ -3,7 +3,7 @@ from . import views
 
 app_name = 'main'
 urlpatterns = [
-    path("home/",views.index, name="homepage"),
+    path("",views.index, name="homepage"),
     path('airtime/', views.airtime, name='airtime'),
     #path('mpesa/', include('mpesa_api.urls')),
     path('chat/', include('chatbot.urls')),
