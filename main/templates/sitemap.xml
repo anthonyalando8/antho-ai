@@ -10,7 +10,12 @@
     {% if url.changefreq %}<changefreq>{{ url.changefreq }}</changefreq>{% endif %}
     {% if url.priority %}<priority>{{ url.priority }}</priority>{% endif %}
     <news:news>
-      {% if url.item.publication %}<news:publication>{{ url.item.publication }}</news:publication>{% endif %}
+      {% if url.item.publication_name %}
+      <news:publication>
+        <news:name>{{ url.item.publication_name }}</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      {% endif %}
       {% if url.item.publication_date %}<news:publication_date>{{ url.item.publication_date }}</news:publication_date>{% endif %}
       {% if url.item.tags %}<news:keywords>{{ url.item.tags }}</news:keywords>{% endif %}
     </news:news>

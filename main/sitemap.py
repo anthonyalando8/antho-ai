@@ -10,10 +10,10 @@ class ClassSitemap(sitemaps.Sitemap):
     def items(self):
         # Return a list of dictionaries containing the URL names and additional attributes
         return [
-            {'name': 'auth0:login', 'publication': 'SoftConnect | Sign In', 'publication_date': '2024-04-15', 'tags': 'authentication, login, Sign In, account'},
-            {'name': 'chatbot:chat', 'publication': 'SoftConnect | SoftChatAI', 'publication_date': '2024-04-15', 'tags': 'chat, messaging, SoftChatAI, Gemini, GPT, AI'},
-            {'name': 'main:airtime', 'publication': 'SoftConnect | By airtime', 'publication_date': '2024-04-15', 'tags': 'main, airtime, utility, utility service'},
-            {'name': 'auth0:register', 'publication': 'SoftConnect | Sign Up', 'publication_date': '2024-04-15', 'tags': 'authentication, registration, sign up, create account'}
+            {'name': 'auth0:login', 'publication_name': 'SoftConnect | Sign In', 'publication_date': '2024-04-15', 'tags': 'authentication, login, Sign In, account'},
+            {'name': 'chatbot:chat', 'publication_name': 'SoftConnect | SoftChatAI', 'publication_date': '2024-04-15', 'tags': 'chat, messaging, SoftChatAI, Gemini, GPT, AI'},
+            {'name': 'main:airtime', 'publication_name': 'SoftConnect | By airtime', 'publication_date': '2024-04-15', 'tags': 'main, airtime, utility, utility service'},
+            {'name': 'auth0:register', 'publication_name': 'SoftConnect | Sign Up', 'publication_date': '2024-04-15', 'tags': 'authentication, registration, sign up, create account'}
         ]
 
     def location(self, item):
