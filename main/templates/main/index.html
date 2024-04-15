@@ -6,12 +6,25 @@
 
 {% block content %}
 <div class="d-flex justify-content-center flex-column align-items-center text-white p-2 h-100 w-100">
-    <p class="">
-        Hello {{user.username}}
-    </p>
-    <p class="text-center">
-        <span class="h1">Welcome to <span class="">Soft Connect </span></span>
-    </p>
+    <div class="row ">
+        <div class="col-md">
+            <img class="img-fluid" src="https://ik.imagekit.io/anthonyalando/Soft_Connect/ai-bg.png?updatedAt=1713176462832" alt="AI background"/>
+        </div>
+        <div class="col-md d-flex justify-content-center flex-column align-items-center">
+             <p class="">
+                Hello {% if user.is_authenticated %}
+                        {{user.username}}
+                    {% else %}
+                        user
+                    {% endif %}
+                
+            </p>
+            <p class="text-center">
+                <span class="h1">Welcome to <span class="">Soft Connect </span></span>
+            </p>
+        </div>
+    </div>
+   
 </div>
     
 {% endblock %}

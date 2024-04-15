@@ -59,18 +59,26 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             {% if user.is_authenticated %}
-                            {{user.last_name}}
+                                {% if user.first_name %}
+                                    {{user.first_name}}
+                                {% elif user.last_name %}
+                                    {{user.last_name}}
+                                {% elif user.username %}
+                                    {{user.username}}
+                                {% else %}
+                                    Account
+                                {% endif %}
                             {% else %}
-                            Account
+                                Sign In
                             {% endif %}
                           
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                           {% if user.is_authenticated %}
-                          <li><a class="dropdown-item" href="{% url 'auth0:logout' %}">Logout</a></li>
+                            <li><a class="dropdown-item" href="{% url 'auth0:logout' %}">Sign Out</a></li>
                           {% else %}
-                          <li><a class="dropdown-item" href="{% url 'auth0:register' %}">Register</a></li>
-                          <li><a class="dropdown-item" href="{% url 'auth0:login' %}">Login</a></li>
+                            <li><a class="dropdown-item" href="{% url 'auth0:register' %}">Sign Up</a></li>
+                            <li><a class="dropdown-item" href="{% url 'auth0:login' %}">Sign In</a></li>
                           {% endif %}
                           
                         </ul>
