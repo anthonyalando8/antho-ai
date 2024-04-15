@@ -48,8 +48,9 @@ Engage in dynamic conversations and unlock the power of AI on SoftConnect intera
     }
     
 </style>
+
+
 <div class="h-100 w-75 mx-auto" id="chat-container">
-    
     
     <div class="top-section position-relative"id="top">
         <div  id="chat">
@@ -75,7 +76,7 @@ Engage in dynamic conversations and unlock the power of AI on SoftConnect intera
             {% csrf_token %}
             <div class="input-group">
                 <span class="input-group-text" id="basic-addon1">
-                    <label for="id_image">
+                    <label for="id_image" id="lbl-upload-image">
                         <i class="fa-solid fa-paperclip"></i>
                     </label>
                     {{ form.image }}
@@ -104,9 +105,37 @@ Engage in dynamic conversations and unlock the power of AI on SoftConnect intera
 
     // Call the function when the page loads
     $(document).ready(function(){
+        $('#id_message').focus();
         adjustChatContainer();
         $("#adjust-chat-button").click(function() {
             adjustChatContainer();
+        });
+        // Add change event listener to the input field
+        $('#id_image').change(function(event) {
+            var file = event.target.files[0];
+            // Create a URL for the selected file
+            var imageURL = URL.createObjectURL(file);
+            // Set the created URL as the src attribute of the img tag
+            $('#uploaded-img').attr('src', imageURL);
+            // Show the modal
+            $('#id_message').attr('placeholder', 'Add text message (Optional)')
+            $('#staticBackdrop').modal('show');
+
+        });
+        $('#btn-change').click(function() {
+            // Trigger click event on the file input field to open file selection dialog
+            $('#lbl-upload-image').click();
+        });
+        $('#clear-selection').click(function() {
+            $('#uploaded-img').attr('src', '');
+            $('#id_image').val('');
+            $('#staticBackdrop').modal('hide');
+            $('#id_message').attr('placeholder','Enter message');
+            $('#id_message').focus();
+        });
+        $('#close-modal').click(function() {
+            // Trigger click event on the file input field to open file selection dialog
+            $('#id_message').focus();
         });
     });
 
@@ -153,9 +182,9 @@ Engage in dynamic conversations and unlock the power of AI on SoftConnect intera
                     console.log(response);
                     submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
                     submitButton.removeAttr("disabled")
+                    $('#id_message').attr('placeholder','Enter message');
+                    $('#id_message').focus();
                     //$('#chat').html(response.html);
-                    //$('#chat').html(response)
-                    //$('#top').scrollTop($('#top')[0].scrollHeight);
                     appendedData = '';
                 },
                 error: function(error) {
