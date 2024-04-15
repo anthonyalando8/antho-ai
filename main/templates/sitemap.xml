@@ -16,7 +16,7 @@
         <news:language>en</news:language>
       </news:publication>
       {% endif %}
-      <title>{{ url.item.title }}</title>
+      <news:title>{{ url.item.title }}</news:title>
       {% if url.item.publication_date %}<news:publication_date>{{ url.item.publication_date }}</news:publication_date>{% endif %}
       {% if url.item.tags %}<news:keywords>{{ url.item.tags }}</news:keywords>{% endif %}
     </news:news>
