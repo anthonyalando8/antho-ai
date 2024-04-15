@@ -5,8 +5,8 @@ import africastalking
 # Create your views here.
 def index(request):
     user = request.user
-    if not user.is_authenticated:
-        return redirect('auth0:login')
+    # if not user.is_authenticated:
+    #     return redirect('auth0:login')
     return render(request, "main/index.html", {'user':user})
 
 def airtime(res):
