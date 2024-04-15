@@ -85,7 +85,6 @@ def index(request):
                 res = genai.text_model(request,message)
             prompt = message
             message_id = generate_id(20)
-
             return StreamingHttpResponse(stream_response_generator(res,prompt, image, message_id))
     else:
         genai.set_chat(request.user)
