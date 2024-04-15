@@ -10,6 +10,7 @@
     {% if url.changefreq %}<changefreq>{{ url.changefreq }}</changefreq>{% endif %}
     {% if url.priority %}<priority>{{ url.priority }}</priority>{% endif %}
     <news:news>
+      {% if url.item.publication %}<news:publication>{{ url.item.publication }}</news:publication>{% endif %}
       {% if url.item.publication_date %}<news:publication_date>{{ url.item.publication_date|date:"Y-m-d" }}</news:publication_date>{% endif %}
       {% if url.item.tags %}<news:keywords>{{ url.item.tags }}</news:keywords>{% endif %}
     </news:news>
@@ -17,3 +18,15 @@
 {% endfor %}
 {% endspaceless %}
 </urlset>
+
+<!-- sitemap.xml -->
+
+<!-- <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    {% for url in urlset %}
+    <url>
+        <loc>{{ url.location }}</loc>
+        <lastmod>{{ url.lastmod|date:"Y-m-d\TH:i:sO" }}</lastmod>
+        <priority>{{ url.priority }}</priority>
+    </url>
+    {% endfor %}
+</urlset> -->
