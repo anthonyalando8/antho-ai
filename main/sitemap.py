@@ -8,13 +8,27 @@ class ClassSitemap(sitemaps.Sitemap):
     changefreq = 'daily'
 
     def items(self):
-        return ['auth0:login', 'chatbot:chat', 'main:airtime', 'auth0:register']
+        # Return a list of dictionaries containing the URL names and additional attributes
+        return [
+            {'name': 'auth0:login', 'publication': 'SoftConnect | Sign In', 'publication_date': '2024-04-15', 'tags': 'authentication, login, Sign In, account'},
+            {'name': 'chatbot:chat', 'publication': 'SoftConnect | SoftChatAI', 'publication_date': '2024-04-15', 'tags': 'chat, messaging, SoftChatAI, Gemini, GPT, AI'},
+            {'name': 'main:airtime', 'publication': 'SoftConnect | By airtime', 'publication_date': '2024-04-15', 'tags': 'main, airtime, utility, utility service'},
+            {'name': 'auth0:register', 'publication': 'SoftConnect | Sign Up', 'publication_date': '2024-04-15', 'tags': 'authentication, registration, sign up, create account'}
+        ]
 
     def location(self, item):
-        return reverse(item)
+        # Reverse the URL based on the URL name
+        return reverse(item['name'])
 
-    def priority(self, item):
-        if item in ['auth0:login', 'chatbot:chat']:
-            return 1.0
-        else:
-            return 0.8
+    #def lastmod(self, item):
+        # Optional: You can implement lastmod method to return the last modification time for each item
+        # Example: return some_last_modification_time
+
+    #def changefreq(self, item):
+        # Optional: You can implement changefreq method to return the change frequency for each item
+        # Example: return 'daily'
+
+    #def priority(self, item):
+        # Optional: You can implement priority method to return the priority for each item
+        # Example: return 1.0
+
