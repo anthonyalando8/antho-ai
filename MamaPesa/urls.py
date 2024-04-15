@@ -17,11 +17,20 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
+from django.contrib.sitemaps.views import sitemap
+from main.sitemap import ClassSitemap
+
+sitemaps = {
+    'static': ClassSitemap,
+}
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
     path('vision/', include('vision.urls')),
     path('auth/', include('auth0.urls')),
+    path('chat/', include('chatbot.urls')),
+    #path('mpesa/', include('mpesa_api.urls')),
     path('google07949db9b98a31b8.html', TemplateView.as_view(template_name="main/google07949db9b98a31b8.html")),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 ]
