@@ -1,4 +1,3 @@
-# custom_filters.py
 import markdown
 import textwrap
 from django import template
