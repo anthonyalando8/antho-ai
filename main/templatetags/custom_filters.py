@@ -7,7 +7,7 @@ register = template.Library()
 
 @register.filter(name='convert_to_markdown')
 def convert_to_markdown(text):
-    text = text.replace('•', '  *')
+    text = text.replace('•', ' * ')
     indented_text = textwrap.indent(text, '> ', predicate=lambda _: True)
     markdown_html = markdown.markdown(indented_text)
     return markdown_html
