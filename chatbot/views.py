@@ -10,6 +10,7 @@ from datetime import datetime
 from . models import ChatHistory, Messages
 import random
 import string
+import pprint
 
 genai = Model()
 
@@ -53,6 +54,7 @@ def index(request):
             context['isFirst'] = False
             context["onProgress"] = False
             context['res'] = ""
+            
             # Done processing
             html_chunk = render_to_string('main/partial.html', context)
             yield html_chunk
@@ -62,6 +64,7 @@ def index(request):
 
         except Exception as e:
             # Handle any exceptions that occur during the loop
+            last_send, last_received  = genai.get_chat_model(user).rewind()
             print(f"An error occurred: {e}")
             # Close the div if an error occurs
             context['isError'] = True
@@ -99,6 +102,7 @@ def index(request):
         
         if has_chat_history(request.user):
             context["default"] = default_chat.messages_set.all()
+            pprint.pprint(context["default"].reverse())
         return HttpResponse(render(request, 'main/chat.html',context))
 
 def updateHistoryMessage(request, modelResponse, image, prompt):

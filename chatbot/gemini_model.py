@@ -22,7 +22,7 @@ class Model:
                 print(m.name)
     def text_model(self, request, message="Hello?"):
         user = request.user
-        response = self.text_models[user.username].send_message(message, stream=True)
+        response = self.text_models[user.email].send_message(message, stream=True)
         #response = self.get_chat(user).send_message(message, stream=True)
         return response
     
@@ -39,6 +39,9 @@ class Model:
         
     
     def set_chat(self, user):
-        if user.username not in self.text_models:
-            self.text_models[user.username] = self.model_text.start_chat(history=self.current_chat)
-        return self.text_models[user.username]
+        if user.email not in self.text_models:
+            self.text_models[user.email] = self.model_text.start_chat(history=self.current_chat)
+        return self.text_models[user.email]
+
+    def get_chat_model(self, user):
+        return self.text_models[user.email]
