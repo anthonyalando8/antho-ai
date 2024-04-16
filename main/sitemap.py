@@ -13,7 +13,8 @@ class ClassSitemap(sitemaps.Sitemap):
             {'name': 'auth0:login', 'publication_name': 'SoftConnect | Sign In', 'publication_date': '2024-04-15', 'tags': 'authentication, login, Sign In, account','title': 'Sign In' },
             {'name': 'chatbot:chat', 'publication_name': 'SoftConnect | SoftChatAI', 'publication_date': '2024-04-15', 'tags': 'chat, messaging, SoftChatAI, Gemini, GPT, AI', 'title': 'SoftChatAI'},
             {'name': 'main:airtime', 'publication_name': 'SoftConnect | By airtime', 'publication_date': '2024-04-15', 'tags': 'main, airtime, utility, utility service', 'title': 'By Airtime'},
-            {'name': 'auth0:register', 'publication_name': 'SoftConnect | Sign Up', 'publication_date': '2024-04-15', 'tags': 'authentication, registration, sign up, create account', 'title': 'Sign Up'}
+            {'name': 'auth0:register', 'publication_name': 'SoftConnect | Sign Up', 'publication_date': '2024-04-15', 'tags': 'authentication, registration, sign up, create account', 'title': 'Sign Up'},
+            {'name': 'main:homepage', 'publication_name': 'Home', 'publication_date': '2024-04-15', 'tags': 'Home,homepage, index, website', 'title': 'Homepage'}
         ]
 
     def location(self, item):
