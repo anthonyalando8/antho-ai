@@ -58,7 +58,7 @@ Engage in dynamic conversations on SoftConnect. Interact with our AI model for i
             {% for chat in default %}
                     <div class=" rounded m-2 p-1 text-light">
                         {{ chat.message | prepend_username:user | convert_to_markdown|safe }}
-                        <div class="m-1" style="max-width: 600px;">
+                        <div class="m-1" style="max-width: 500px; max-height: 500px;">
                             {% if chat.image %}
                                 <img src="{{ chat.image.url }}" class="img-fluid rounded " alt="Image message">
                             {% endif %}

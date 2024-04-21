@@ -3,7 +3,7 @@
 {% if isFirst %}
     <div class="rounded m-2 p-1 text-light" id="prompt_{{ message_id }}_container">
         {{ prompt | prepend_username:user | convert_to_markdown|safe }}
-        <div class="m-1" id="image_{{ message_id }}_container" style="max-width: 600px;"></div>
+        <div class="m-1" id="image_{{ message_id }}_container" style="max-width: 600px; max-height: 500px;"></div>
     </div>
     <div class="rounded m-2 p-1 text-light" id="response_{{ message_id }}_container">
         {{ "" | prepend_gemini | convert_to_markdown|safe }}
