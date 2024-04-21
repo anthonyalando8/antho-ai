@@ -1,4 +1,4 @@
-{% extends 'main/index.html'%}
+{% extends 'main/base.html' %}
 
 
 {% block title %}
@@ -109,7 +109,9 @@ Engage in dynamic conversations on SoftConnect. Interact with our AI model for i
         $('#id_message').focus();
         adjustChatContainer();
         $("#adjust-chat-button").click(function() {
-            adjustChatContainer();
+            $('#top').animate({
+            scrollTop: $('#top')[0].scrollHeight
+        }, 'slow');        
         });
         // Add change event listener to the input field
         $('#id_image').change(function(event) {

@@ -25,6 +25,7 @@ def airtime(res):
     try:
         response = airtime.send(phone_number=phone_number, amount=amount, currency_code=currency_code)
         return HttpResponse(response)
+      
     except Exception as e:
         return HttpResponse(f"Encountered an error while sending airtime. More error details below.\n {e}")
 

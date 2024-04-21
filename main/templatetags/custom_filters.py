@@ -16,7 +16,7 @@ def convert_to_markdown(text):
     # Regular expression pattern to match standalone "```"
     pattern_without_word = r'```(?!\w)'
     # Replace occurrences with the specified values
-    markdown_html = re.sub(pattern_with_word, '<pre><code>', markdown_html)
+    markdown_html = re.sub(pattern_with_word, '<pre class="fs-6 bg-black card shadow-sm mx-auto d-inline-block text-info p-2" style="background-color:black;"><code>', markdown_html)
     markdown_html = re.sub(pattern_without_word, '</code></pre>', markdown_html)
     return markdown_html
 
