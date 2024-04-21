@@ -49,7 +49,9 @@ def index(request):
                 #except Exception as e:
                     #print(f'{type(e).__name__}: {e}')
             
-
+            # Call the updateHistoryMessage function after processing all chunks
+            updateHistoryMessage(request, accumulatedResponse, image, prompt)
+            
             context['isLast'] = True
             context['isFirst'] = False
             context["onProgress"] = False
@@ -59,8 +61,7 @@ def index(request):
             html_chunk = render_to_string('main/partial.html', context)
             yield html_chunk
 
-            # Call the updateHistoryMessage function after processing all chunks
-            updateHistoryMessage(request, accumulatedResponse, image, prompt)
+            
 
         except Exception as e:
             # Handle any exceptions that occur during the loop

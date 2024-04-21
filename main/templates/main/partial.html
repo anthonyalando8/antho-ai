@@ -3,11 +3,7 @@
 {% if isFirst %}
     <div class="rounded m-2 p-1 text-light" id="prompt_{{ message_id }}_container">
         {{ prompt | prepend_username:user | convert_to_markdown|safe }}
-        <div class="m-1">
-            {% if image %}
-                <img src="{{ image.url }}" class="img-fluid rounded " alt="Image message">
-            {% endif %}
-        </div>
+        <div class="m-1" id="image_{{ message_id }}_container" style="max-width: 600px;"></div>
     </div>
     <div class="rounded m-2 p-1 text-light" id="response_{{ message_id }}_container">
         {{ "" | prepend_gemini | convert_to_markdown|safe }}
@@ -34,5 +30,12 @@
         $("#response_{{ message_id }}_body").html(markdownString);
     </script>
 {% elif isLast%}
+    {% if image %}
+    <script>
+        var image_msg = `<img id="image_{{ message_id }}" src="{{ image.url }}" class="img-fluid rounded " alt="Image message">`;
+        $('#image_{{ message_id }}_container').html(image_msg);
+    </script>
+    {% endif %}
+
 <!-- Streaming complete -->
 {% endif %}
