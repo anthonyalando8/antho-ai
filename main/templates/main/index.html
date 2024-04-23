@@ -5,13 +5,24 @@
 {% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-center flex-column align-items-center text-white p-2 h-100 w-100">
-    <div class="row ">
-        <div class="col-md">
-            <img class="img-fluid" src="https://ik.imagekit.io/anthonyalando/Soft_Connect/ai-bg.png?updatedAt=1713176462832" alt="AI background"/>
+<div class="d-flex justify-content-center flex-column  text-white h-100 w-100">
+    <div class="row w-100">
+        <div class="col-md-5">
+            <div class="">
+                <img class="img-fluid"  src="https://ik.imagekit.io/anthonyalando/Soft_Connect/SOFTCHAT.png?updatedAt=1713881652505" alt="AI background"/>
+            </div>
+            <div class="me-5 ms-5 mt-2">
+                <div class="text-info text-muted d-block" style="font-size: 22px;">
+                    Chat with our AI model akin to GPT for instant responses. Explore conversational AI today. 
+                </div>
+                <a class="a btn" href="{% url 'chatbot:chat' %}">
+                    <img height="50px" src="https://ik.imagekit.io/anthonyalando/Soft_Connect/askai.png?updatedAt=1713883376793">
+                </a>
+            </div>
+            
         </div>
         
-        <div class="col-md d-flex justify-content-center flex-column align-items-center">
+        <div class="col-md-7 d-flex justify-content-center flex-column align-items-center">
              <p class="">
                 Hello {% if user.is_authenticated %}
                         {{user.username}}
