@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
+from django.urls import reverse
 import pathlib
 import textwrap
 from .forms import CreateChatForm
@@ -21,7 +22,10 @@ def index(request):
     
     user = request.user
     if not user.is_authenticated:
-        return redirect('auth0:login')
+        redirect_url = request.GET.get('redirect_url', '/chat')
+        # Construct the login URL with the redirect URL parameter
+        login_url = reverse('auth0:login') + f'?redirect_url={redirect_url}'
+        return redirect(login_url)
     
     def stream_response_generator(res, prompt, image, message_id):
         print(message_id)

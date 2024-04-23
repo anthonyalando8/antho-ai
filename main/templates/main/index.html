@@ -15,15 +15,15 @@
                 <div class="text-info text-muted d-block" style="font-size: 22px;">
                     Chat with our AI model akin to GPT for instant responses. Explore conversational AI today. 
                 </div>
-                <a class="a btn" href="{% url 'chatbot:chat' %}">
-                    <img height="50px" src="https://ik.imagekit.io/anthonyalando/Soft_Connect/askai.png?updatedAt=1713883376793">
+                <a class="a btn border border-3 border-info rounded-pill ps-3 pe-3 mt-4" href="{% url 'chatbot:chat' %}">
+                    <img height="40px" src="https://ik.imagekit.io/anthonyalando/Soft_Connect/askai_boaderless.png?updatedAt=1713906699445">
                 </a>
             </div>
             
         </div>
         
-        <div class="col-md-7 d-flex justify-content-center flex-column align-items-center">
-             <p class="">
+        <div class="col-md-7 d-flex justify-content-center flex-column align-items-center text-info">
+             <p class="p-4">
                 Hello {% if user.is_authenticated %}
                         {{user.username}}
                     {% else %}
@@ -31,7 +31,7 @@
                     {% endif %}
                 
             </p>
-            <p class="text-center">
+            <p class="text-center p-4">
                 <span class="h1">Welcome to <span class="">Soft Connect </span></span>
             </p>
         </div>

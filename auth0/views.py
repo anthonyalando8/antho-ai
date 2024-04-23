@@ -9,7 +9,9 @@ def register(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             login(request, form.save())
-            return redirect("main:homepage")
+
+            redirect_url = request.GET.get('redirect_url', 'main:homepage')
+            return redirect(redirect_url)
     else:
         form = RegisterForm()
     return render(request, 'auth0/register.html',{'form':form})
@@ -19,7 +21,9 @@ def login_view(request):
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
             login(request, form.get_user())
-            return redirect("main:homepage")
+            redirect_url = request.GET.get('redirect_url', 'main:homepage')
+
+            return redirect(redirect_url)
     else:
         form = AuthenticationForm()
     return render(request, 'auth0/login.html',{'form':form})
