@@ -73,23 +73,31 @@ Engage in dynamic conversations on SoftConnect. Interact with our AI model for i
             <button class="btn btn-success text-light m-2 bg-transparent" id="adjust-chat-button"><i class="fa-solid fa-arrow-down"></i></button>
         </div>
     </div>
-    <div class="bg-light m-2 border rounded" id="chat-form">
+    <div class="bg-transparent m-2 border rounded-pill ps-3 pe-3" id="chat-form">
         <form method="post" id="form" enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="input-group">
-                <span class="input-group-text" id="basic-addon1">
-                    <label for="id_image" id="lbl-upload-image">
-                        <i class="fa-solid fa-paperclip"></i>
+            <div class="input-group ">
+                <span class="input-group-text bg-transparent border-0" id="basic-addon1">
+                    <label for="id_image" class="text-light bg-transparent" id="lbl-upload-image">
+                        <i class="fa-regular fa-image"></i>
                     </label>
                     {{ form.image }}
                 </span>
                 {{ form.message }}
-                <button type="submit" id="btn-submit"class="btn btn-success btn-block"><i class="fa-solid fa-paper-plane"></i></button>
+                <button type="submit" id="btn-submit"class="btn text-light btn-block disabled"><i class="fa-solid fa-paper-plane "></i></button>
             </div>
         </form>  
     </div>
 </div>
 <script>
+    $('#id_message').on('input', function() {
+        var text = $(this).val().trim(); // Trim to remove whitespace
+        if (text === '') {
+            $('#btn-submit').addClass('disabled');
+        } else {
+            $('#btn-submit').removeClass('disabled');
+        }
+    });
     function adjustChatContainer() {
         $("#chat-container").addClass("w-75");
         $(window).resize(function(){
