@@ -22,9 +22,10 @@ def index(request):
     
     user = request.user
     if not user.is_authenticated:
-        redirect_url = request.GET.get('redirect_url', '/chat')
+        #redirect_url = request.GET.get('redirect_url', '/chat')
         # Construct the login URL with the redirect URL parameter
-        login_url = reverse('auth0:login') + f'?redirect_url={redirect_url}'
+        current_url = request.build_absolute_uri()
+        login_url = reverse('auth0:login') + f'?redirect_url={current_url}'
         return redirect(login_url)
     
     def stream_response_generator(res, prompt, image, message_id):
