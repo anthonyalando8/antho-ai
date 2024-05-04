@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     'chatbot.apps.ChatbotConfig',
     'vision',
     'auth0.apps.Auth0Config',
-    'markdownify'
 ]
 
 MIDDLEWARE = [
