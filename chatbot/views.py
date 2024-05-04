@@ -5,16 +5,20 @@ import pathlib
 import textwrap
 from .forms import CreateChatForm
 from .gemini_model import Model
+from main.generate_random_hashed_string import Generator
 from django.template.loader import render_to_string
 import markdown
 from datetime import datetime
 from . models import ChatHistory, Messages
 import random
 import string
-import pprint
+import json
+from django.core.cache import cache
+from django.core.exceptions import ObjectDoesNotExist
 
 genai = Model()
 
+current_chat_id = None
 
 def index(request):
     user_agent = request.META.get('HTTP_USER_AGENT', '')
@@ -28,8 +32,8 @@ def index(request):
         login_url = reverse('auth0:login') + f'?redirect_url={current_url}'
         return redirect(login_url)
     
+    
     def stream_response_generator(res, prompt, image, message_id):
-        print(message_id)
         accumulatedResponse = ""
         context = {
             "message_id":message_id,
@@ -44,18 +48,17 @@ def index(request):
         }
         try:
             for chunk in res:
-                #try:
+               
                 new_chunk = chunk.text
                 accumulatedResponse += new_chunk
                 context['res'] = accumulatedResponse
                 html_chunk = render_to_string('main/partial.html', context)
                 context['isFirst'] = False
                 yield html_chunk
-                #except Exception as e:
-                    #print(f'{type(e).__name__}: {e}')
+                
             
             # Call the updateHistoryMessage function after processing all chunks
-            updateHistoryMessage(request, accumulatedResponse, image, prompt)
+            updateHistoryMessage(request, accumulatedResponse, image, prompt, current_chat_id)
             
             context['isLast'] = True
             context['isFirst'] = False
@@ -93,44 +96,95 @@ def index(request):
             else:
                 res = genai.text_model(request,message)
             prompt = message
-            message_id = generate_id(20)
-            return StreamingHttpResponse(stream_response_generator(res,prompt, image, message_id))
+            return StreamingHttpResponse(stream_response_generator(res,prompt, image, 
+                                                                   Generator("request.user.email+request.user.username")))
     else:
-        genai.set_chat(request.user)
-        form = CreateChatForm()
-        default_chat = ChatHistory.objects.filter(user=request.user).first()
+        chat_id = request.GET.get('c', None)
+        global current_chat_id
 
-        context = {
-            "user": request.user,
-            "form": form,
-            "default": []
-        }
-        
-        if has_chat_history(request.user):
-            context["default"] = default_chat.messages_set.all()
-            pprint.pprint(context["default"].reverse())
-        return HttpResponse(render(request, 'main/chat.html',context))
+        if chat_id:
+            context = {
+                "user": request.user,
+                "form": CreateChatForm(),
+                "default": []
+            }
+            try:
+                default_chat = ChatHistory.objects.get(user=request.user, history_id=chat_id)
+                context["default"] = default_chat.messages_set.all()
+                current_history_value = default_chat.current_history
+                # try:
+                #     data = json.loads(current_history_value)
+                #     print(data)
+                # except json.JSONDecodeError:
+                #     print("Invalid JSON format")
+                genai.set_chat(user,[] , True)
+                current_chat_id = chat_id
+                return HttpResponse(render(request, 'main/chat.html', context))
 
-def updateHistoryMessage(request, modelResponse, image, prompt):
+            except ChatHistory.DoesNotExist:
+                    context["default"] = []
+                    cache.delete(f"{request.user.id}_previous_chat_id")
+                    return redirect('chatbot:chat')
+        else:
+            return redirect_page(request)
+
+def updateHistoryMessage(request, modelResponse, image, prompt, history_id):
         date = datetime.now().date()
-        date_time = datetime.now()
+        date_time = datetime.now() 
+        current_history = genai.get_chat_model(request.user).history
 
-        new_id = generate_id(25)
-
-        if not has_chat_history(request.user):
-            history = ChatHistory(date=date, history_id=new_id)
+        if not user_has_chat_history(request.user):
+            history_id= Generator(request.user.email)
+            history = ChatHistory(date=date, history_id=history_id, 
+                                  current_history=current_history)
             history.save()
             request.user.chathistory.add(history)
         
-        user_chat_history = ChatHistory.objects.filter(user=request.user).first()
-        user_chat_history.messages_set.create(message=prompt, response=modelResponse, date=date_time, image=image)
+        cache.set(f"{request.user.id}_previous_chat_id", history_id, timeout=86400)
+
+        try:
+            user_chat_history = ChatHistory.objects.get(user=request.user, history_id=history_id)
+            # Record exists, you can access it here
+        except ObjectDoesNotExist:
+            history = ChatHistory(date=date, history_id=history_id, current_history=current_history)
+            history.save()
+            request.user.chathistory.add(history)
+        user_chat_history = ChatHistory.objects.get(user=request.user, history_id=history_id)
+        user_chat_history.current_history = current_history
+
+# Save the object to persist the changes
+        user_chat_history.save()
+        user_chat_history.messages_set.create(message=prompt, response=modelResponse, date=date_time, 
+                                              image=image, request_id=Generator(request.user.username))
 
         
-def has_chat_history(user):
-    # Filter ChatHistory records based on the current user's ID
+def user_has_chat_history(user):
     user_chat_history_count = ChatHistory.objects.filter(user=user).count()
     return user_chat_history_count > 0
 
 def generate_id(length=25):
     characters = string.ascii_letters + string.digits
     return ''.join(random.choice(characters) for _ in range(length))
+
+def get_user_cache(user, key):
+    return cache.get(f"{user.id}_{key}")
+
+def redirect_page(request):
+    form = CreateChatForm()
+
+    cached_chat_id = get_user_cache(request.user, "previous_chat_id")
+    context = {
+        "user": request.user,
+        "form": form,
+        "default": []
+    }
+    global current_chat_id
+
+    if cached_chat_id is not None:
+        redirect_url = reverse('chatbot:chat') + f'?c={cached_chat_id}'
+        return redirect(redirect_url)
+               
+    else:
+        current_chat_id = Generator(request.user.id)
+        genai.set_chat(request.user,[],True)
+        return HttpResponse(render(request, 'main/chat.html', context))

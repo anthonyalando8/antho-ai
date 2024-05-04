@@ -20,6 +20,8 @@ Engage in dynamic conversations on SoftConnect. Interact with our AI model for i
 {% block header %} SoftChatAI {% endblock %}
 {% block content %}
 {% load custom_filters %}
+{% load markdownify %}
+
 <style>
     .top-section{
         -ms-overflow-style: none;  /* IE and Edge */
@@ -57,7 +59,7 @@ Engage in dynamic conversations on SoftConnect. Interact with our AI model for i
     <div class="top-section position-relative"id="top">
         <div  id="chat">
             {% for chat in default %}
-                    <div class=" rounded m-2 p-1 text-light">
+                    <div class=" rounded m-2 p-1 text-light" id="prompt_{{ chat.request_id }}">
                         {{ chat.message | prepend_username:user | convert_to_markdown|safe }}
                         <div class="m-1 overflow-hidden" style="max-width: 500px; max-height: 500px;">
                             {% if chat.image %}
@@ -66,7 +68,9 @@ Engage in dynamic conversations on SoftConnect. Interact with our AI model for i
                         </div>
                     </div>
                     
-                    <div class=" rounded m-2 p-1 text-light">{{ chat.response | prepend_gemini | convert_to_markdown|safe }}</div>
+                    <div class=" rounded m-2 p-1 text-light" id="response_{{ chat.request_id }}">
+                        {{ chat.response | prepend_gemini | convert_to_markdown |safe }}
+                    </div>
             {% endfor%}
         </div>
         <div class="position-fixed end-0" style="bottom: 98px;">
@@ -89,6 +93,16 @@ Engage in dynamic conversations on SoftConnect. Interact with our AI model for i
         </form>  
     </div>
 </div>
+<script>
+    // myapp/static/script.js
+
+    // $(document).ready(function() {
+    //     $.getJSON('/chat/', function(data) {
+    //         console.log("data:", data);
+    //     });
+    // });
+
+</script>
 <script>
     $('#id_message').on('input', function() {
         var text = $(this).val().trim(); // Trim to remove whitespace

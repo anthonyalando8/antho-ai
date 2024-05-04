@@ -29,5 +29,6 @@ def airtime(res):
     except Exception as e:
         return HttpResponse(f"Encountered an error while sending airtime. More error details below.\n {e}")
 
-
+def about(request):
+    return render(request, 'main/about.html',{})
 

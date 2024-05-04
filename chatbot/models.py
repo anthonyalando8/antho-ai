@@ -7,21 +7,20 @@ class Chat(models.Model):
 
 class ChatHistory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="chathistory", null=True)
-    history_id = models.CharField(max_length=30, null=True, blank=True)
+    history_id = models.CharField(max_length=100, null=True, blank=True)
+    current_history = models.TextField()
     date = models.DateField()
 
     def __str__(self) -> str:
-        return str(self.date)
+        return str(self.history_id)
 
 class Messages(models.Model):
     chatHistory = models.ForeignKey(ChatHistory, on_delete=models.CASCADE)
+    request_id = models.CharField(max_length=100, null=True)
     message = models.CharField(max_length=30000, null=True)
     image = models.ImageField(upload_to="images/", null=True, blank=True)
     response = models.CharField(max_length=5000)
     date = models.DateTimeField()
 
     def __str__(self) -> str:
-        return f""" message: 
-        {self.message},
-        response: {self.response}
-        """
+        return str(self.request_id)

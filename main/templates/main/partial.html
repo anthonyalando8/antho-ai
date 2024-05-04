@@ -1,13 +1,13 @@
 {% load custom_filters %}
 
 {% if isFirst %}
-    <div class="rounded m-2 p-1 text-light" id="prompt_{{ message_id }}_container">
+    <div class="rounded m-2 p-1 text-light" id="prompt_{{ message_id }}">
         {{ prompt | prepend_username:user | convert_to_markdown|safe }}
         <div class="m-1" id="image_{{ message_id }}_container" style="max-width: 600px; max-height: 500px;"></div>
     </div>
     <div class="rounded m-2 p-1 text-light" id="response_{{ message_id }}_container">
         {{ "" | prepend_gemini | convert_to_markdown|safe }}
-        <div id='response_{{ message_id }}_body'>
+        <div id='response_{{ message_id }}'>
             {{ res | convert_to_markdown|safe }}
         </div>
     </div>
@@ -27,7 +27,7 @@
 {% elif onProgress %}
     <script>
         var markdownString = `{{ res | convert_to_markdown | safe }}`;
-        $("#response_{{ message_id }}_body").html(markdownString);
+        $("#response_{{ message_id }}").html(markdownString);
     </script>
 {% elif isLast%}
     {% if image %}

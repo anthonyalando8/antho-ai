@@ -38,9 +38,10 @@ class Model:
         return response
         
     
-    def set_chat(self, user):
-        if user.email not in self.text_models:
-            self.text_models[user.email] = self.model_text.start_chat(history=self.current_chat)
+    def set_chat(self, user, current_chat = [], overide=False):
+        if user.email not in self.text_models or overide:
+            print(current_chat)
+            self.text_models[user.email] = self.model_text.start_chat(history=current_chat)
         return self.text_models[user.email]
 
     def get_chat_model(self, user):

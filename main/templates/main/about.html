@@ -1,0 +1,69 @@
+{% extends 'main/base.html' %}
+
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}
+About | SoftConnect
+{% endblock %}
+
+{% block titleOg %}
+About | SoftConnect
+{% endblock %}
+{% block titleWeb %}
+About | SoftConnect
+{% endblock %}
+
+{% block descriptionWeb %}
+Soft Connect is an innovative research center specializing in AI-driven solutions tailored to enhance organizational efficiency and individual productivity.
+{% endblock %}
+{% block descriptionOg %}
+Soft Connect is an innovative research center specializing in AI-driven solutions tailored to enhance organizational efficiency and individual productivity.
+{% endblock %}
+
+{% block header %} About Soft Connect {% endblock %}
+
+{% block content %}
+<div class="about text-white m-2 row gy-2">
+    <div class="h1 col-md-10 text-center m-1 mx-auto">
+        About Us
+    </div>
+    <div class="text-light-50 lead m-1 col-md-10 mx-auto">
+        Soft Connect is an innovative research center specializing in AI-driven solutions tailored to enhance organizational efficiency and individual productivity. 
+        Leveraging cutting-edge artificial intelligence technologies, we empower diverse organizations and individuals to 
+        optimize task performance and streamline operations.
+        <div class="d-flex justify-content-center">
+            <img class="img-fluid" src="https://ik.imagekit.io/anthonyalando/Soft_Connect/poster2.png?updatedAt=1713888167225" alt="Why Soft Connect?">
+
+        </div>
+    </div>
+    <div class="col-md-10 mt-2 mx-auto">
+        <div class="row gx-2">
+            <div class="col-md-6">
+                <div class="border m-2 p-2 rounded">
+                    <div class="h4 text-center">Vision</div>
+                    <img class="img-fluid mx-auto d-block" style="max-height: 300px;" src="https://ik.imagekit.io/anthonyalando/Soft_Connect/vision.png?updatedAt=1714828401206" alt="Soft Connect Vision">
+                    <div class="lead">
+                        The vision of Soft Connect is to become a global leader in AI-driven solutions, pioneering innovation and 
+                        accessibility in technology to empower individuals and organizations worldwide. We aspire to create a future where artificial 
+                        intelligence is seamlessly integrated into daily life, driving efficiency, productivity, and positive societal impact.
+                    </div>
+                </div>
+                
+            </div>
+            <div class="col-md-6">
+                <div class="border m-2 p-2 rounded">
+                    <div class="h4 text-center">Mission</div>
+                    <img class="img-fluid mx-auto d-block" style="max-height: 300px;" src="https://ik.imagekit.io/anthonyalando/Soft_Connect/strategies.png?updatedAt=1714828401201" alt="Soft Connect mission">
+                    <div class="lead">
+                        The mission of Soft Connect is to democratize access to AI tools, ensuring that individuals and organizations
+                        alike can harness the power of artificial intelligence to achieve peak performance and efficiency. We believe in empowering every user 
+                        with cutting-edge technology, fostering innovation, and driving positive change across industries.
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

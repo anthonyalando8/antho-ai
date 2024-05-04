@@ -4,7 +4,7 @@ from django.contrib import sitemaps
 from django.urls import reverse
 
 class ClassSitemap(sitemaps.Sitemap):
-    priority = 0.8
+    priority = 1.0
     changefreq = 'daily'
 
     def items(self):
@@ -14,7 +14,9 @@ class ClassSitemap(sitemaps.Sitemap):
             {'name': 'chatbot:chat', 'publication_name': 'SoftConnect | SoftChatAI', 'publication_date': '2024-04-15', 'tags': 'chat, messaging, SoftChatAI, Gemini, GPT, AI', 'title': 'SoftChatAI'},
             {'name': 'main:airtime', 'publication_name': 'SoftConnect | By airtime', 'publication_date': '2024-04-15', 'tags': 'main, airtime, utility, utility service', 'title': 'By Airtime'},
             {'name': 'auth0:register', 'publication_name': 'SoftConnect | Sign Up', 'publication_date': '2024-04-15', 'tags': 'authentication, registration, sign up, create account', 'title': 'Sign Up'},
-            {'name': 'main:homepage', 'publication_name': 'Home', 'publication_date': '2024-04-15', 'tags': 'Home,homepage, index, website', 'title': 'Homepage'}
+            {'name': 'main:homepage', 'publication_name': 'Home', 'publication_date': '2024-04-15', 'tags': 'Home,homepage, index, website', 'title': 'Homepage'},
+            {'name': 'main:about', 'publication_name': 'About Soft Connect', 'publication_date': '2024-05-04', 'tags': 'About Soft Connect', 'title': 'About Us'}
+
         ]
 
     def location(self, item):

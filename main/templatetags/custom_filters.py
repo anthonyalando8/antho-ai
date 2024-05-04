@@ -9,7 +9,7 @@ register = template.Library()
 def convert_to_markdown(text):
     text = text.replace('•', ' * ')
     indented_text = textwrap.indent(text, '> ', predicate=lambda _: True)
-    markdown_html = markdown.markdown(indented_text)
+    markdown_html = markdown.markdown(indented_text,extensions=['markdown.extensions.fenced_code'])
     # Regular expression pattern to match "```" followed by a word
     pattern_with_word = r'```(\w+)'
 
@@ -22,7 +22,7 @@ def convert_to_markdown(text):
 
 @register.filter(name='prepend_gemini')
 def prepend_gemini(value):
-    return f"**SoftChatAI**\n\n {value}"
+    return f"**SoftChatAI**\n\n{value}"
 
 @register.filter(name='prepend_username')
 def prepend_username(value, user):
