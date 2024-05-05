@@ -5,35 +5,34 @@
 {% endblock %}
 
 {% block content %}
-<div class="  text-white h-100 w-100">
-    <div class="row w-100">
-        <div class="col-md-12 d-flex justify-content-center flex-column align-items-center">
-            <div class="">
-                <img class="img-fluid"  src="https://ik.imagekit.io/anthonyalando/Soft_Connect/logo.png?updatedAt=1713934916884" alt="Soft Connect AI Logo"/>
-            </div>
-            <div class="me-3 ms-3 mt-2">
-                <div class="text-info text-muted d-block" style="font-size: 21px;">
-                    Chat with our AI model akin to GPT for instant responses. Explore conversational AI today. 
+<div class="text-white p-2 d-flex justify-content-center align-items-center cover h-100 w-100">
+    <style>
+        .cover{
+            background-image: url(https://ik.imagekit.io/anthonyalando/Soft_Connect/black%20bg.jpg?updatedAt=1714930722480);
+            background-repeat: no-repeat;
+            background-size:cover;
+        }
+    </style>
+    <div class="row w-100 ">
+        <div class="col-md-8 mx-auto">
+            <div class="row">
+                <div class="col-md-10">
+                    <span class="text-muted lead">IT Consulting and Solutions</span> 
+                    <div class="h1 text-white">
+                        <h1>Soft Connect AI: An Intelligent AI Powered Technology Solutions and Services.</h1>
+                    </div>
+                    <div class="">
+                        <div class="mt-2 text-muted d-block">
+                            Chat with our AI model akin to GPT for instant responses. Explore conversational AI today. 
+                        </div>
+                        <a class="a btn btn-info btn-lg border border-2 border-info rounded-pill ps-3 pe-3 mt-4" href="{% url 'chatbot:chat' %}">
+                            AI Assistant <i class="fa-solid fa-arrow-right fa-beat "></i>
+                        </a>
+                    </div>
                 </div>
-                <a class="a btn border border-3 border-info rounded-pill ps-3 pe-3 mt-4" href="{% url 'chatbot:chat' %}">
-                    <img height="40px" src="https://ik.imagekit.io/anthonyalando/Soft_Connect/askai_boaderless.png?updatedAt=1713906699445">
-                </a>
-            </div>           
+            </div>          
         </div>
         
-        <!-- <div class="col-md-7 d-flex justify-content-center flex-column align-items-center text-info">
-             <p class="p-4">
-                Hello {% if user.is_authenticated %}
-                        {{user.username}}
-                    {% else %}
-                        user
-                    {% endif %}
-                
-            </p>
-            <p class="text-center p-4">
-                <span class="h1">Welcome to <span class="">Soft Connect </span></span>
-            </p>
-        </div> -->
     </div>
    
 </div>
