@@ -26,4 +26,4 @@ def prepend_gemini(value):
 
 @register.filter(name='prepend_username')
 def prepend_username(value, user):
-    return f"**{user.username if user.is_authenticated else "You"}**\n\n {value}"
+    return f"**{user.username if user.is_authenticated else 'You'}**\n\n {value}"
