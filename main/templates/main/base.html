@@ -38,7 +38,7 @@
 </head>
 <body class="p-0 m-0">
     <header class="d-none"><h1>{% block header %} Homepage {% endblock %}</h1></header>
-    <nav class="navbar navbar-expand-lg bg-dark navbar-dark sticky-top " id="nav">
+    <nav class="navbar navbar-expand-lg  bg-dark navbar-dark  sticky-top " id="nav">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">
                 <img src="https://ik.imagekit.io/anthonyalando/Soft_Connect/SOFTCHAT.png?updatedAt=1713881652505" alt="logo" width="30" height="24">
@@ -62,38 +62,10 @@
                     <li class="nav-item">
                         <a class="nav-link " href="/about">About Us</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle position-relative {% if not user.is_authenticated %} bg-success  rounded  {% else %} bg-transparent {% endif %}" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            {% if user.is_authenticated %}
-                                {% if user.first_name %}
-                                    {{user.first_name}}
-                                {% elif user.last_name %}
-                                    {{user.last_name}}
-                                {% elif user.username %}
-                                    {{user.username}}
-                                {% else %}
-                                    Account
-                                {% endif %}
-                            {% else %}
-                                Sign In
-                                <span class="position-absolute top-0 start-100 translate-middle badge border border-light rounded-circle bg-info p-1"><span class="visually-hidden">Login</span></span>
-                            {% endif %}
-                          
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                          {% if user.is_authenticated %}
-                            <li><a class="dropdown-item" href="{% url 'auth0:logout' %}">Sign Out</a></li>
-                          {% else %}
-                            <li><a class="dropdown-item" href="{% url 'auth0:register' %}">Sign Up</a></li>
-                            <li><a class="dropdown-item" href="{% url 'auth0:login' %}">Sign In</a></li>
-                          {% endif %}
-                          
-                        </ul>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-warning text-dark" href="{% url 'chatbot:chat' %}">AI Assistant</a>
                     </li>
                 </ul>
-                <div class="d-flex me-2">
-                    <a class="btn btn-warning" href="{% url 'chatbot:chat' %}">AI Assistant</a>
-                </div>
                 <form class="d-flex">
                     <div class="input-group">
                         <input type="search" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-serach">
@@ -103,7 +75,41 @@
                             </button>
                         </span>
                     </div>
-                  </form>
+                </form>
+                <div class="dropdown d-flex text-end mx-md-5 my-2 my-md-0">
+                    <a href="#" class="d-block position-relative link-light text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                      <img src="https://ik.imagekit.io/anthonyalando/Soft_Connect/user.png?updatedAt=1682239876486" alt="user" width="32" height="32" class="rounded-circle">
+                      {% if user.is_authenticated %}
+                        {% if user.first_name %}
+                            {{user.first_name}}
+                        {% elif user.last_name %}
+                            {{user.last_name}}
+                        {% elif user.username %}
+                            {{user.username}}
+                        {% else %}
+                            Account
+                        {% endif %}
+                        {% else %}
+                            Sign In
+                            <span class="position-absolute top-0 start-100 translate-middle badge border border-light rounded-circle bg-info p-1"><span class="visually-hidden">Login</span></span>
+                        {% endif %}
+                      <!-- <span class="position-absolute top-0 start-100 translate-middle badge border border-light rounded-circle bg-info p-1"> -->
+                        <!-- <span class="visually-hidden">Login</span> -->
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                      {% if user.is_authenticated %}
+                        <li><a class="dropdown-item" href="">Account</a></li>
+                        <li><a class="dropdown-item" href="{% url 'auth0:logout' %}">Sign Out</a></li>
+
+                      {% else %}
+                      <li><a class="dropdown-item" href="{% url 'auth0:login' %}">Sign In</a></li>
+
+                        <li><a class="dropdown-item" href="{% url 'auth0:register' %}">Sign Up</a></li>
+                      {% endif %}
+                      
+                    </ul>
+                </div>
             </div>
         </div>
     </nav>
@@ -125,7 +131,7 @@
           </div>
         </div>
     </div>
-    <div class="container-fluid overflow-auto position-fixed  p-0 m-0 bg-white" id="body-container" style="height: calc(100% - 56px)!important;">
+    <div class="container-fluid overflow-auto position-fixed  p-0 m-0 {% block body-color %} bg-white {% endblock %}" id="body-container" style="height: calc(100% - 56px)!important;">
         {% block content %}
             Homepage
         {% endblock %}
