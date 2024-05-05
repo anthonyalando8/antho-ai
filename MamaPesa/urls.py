@@ -30,7 +30,7 @@ urlpatterns = [
     path('vision/', include('vision.urls')),
     path('auth/', include('auth0.urls')),
     path('chat/', include('chatbot.urls')),
-    #path('mpesa/', include('mpesa_api.urls')),
+    path('mpesa/', include('mpesa_api.urls')),
     path('google07949db9b98a31b8.html', TemplateView.as_view(template_name="main/google07949db9b98a31b8.html")),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 ]

@@ -23,14 +23,14 @@ current_chat_id = None
 def index(request):
     user_agent = request.META.get('HTTP_USER_AGENT', '')
     print(user_agent)
+    session_id = request.session.session_key
     
     user = request.user
-    if not user.is_authenticated:
-        #redirect_url = request.GET.get('redirect_url', '/chat')
-        # Construct the login URL with the redirect URL parameter
-        current_url = request.build_absolute_uri()
-        login_url = reverse('auth0:login') + f'?redirect_url={current_url}'
-        return redirect(login_url)
+    # if not user.is_authenticated:
+    #     # Construct the login URL with the redirect URL parameter
+    #     current_url = request.build_absolute_uri()
+    #     login_url = reverse('auth0:login') + f'?redirect_url={current_url}'
+    #     return redirect(login_url)
     
     
     def stream_response_generator(res, prompt, image, message_id):
@@ -58,7 +58,8 @@ def index(request):
                 
             
             # Call the updateHistoryMessage function after processing all chunks
-            updateHistoryMessage(request, accumulatedResponse, image, prompt, current_chat_id)
+            if user.is_authenticated:
+                updateHistoryMessage(request, accumulatedResponse, image, prompt, current_chat_id)
             
             context['isLast'] = True
             context['isFirst'] = False
@@ -73,7 +74,7 @@ def index(request):
 
         except Exception as e:
             # Handle any exceptions that occur during the loop
-            last_send, last_received  = genai.get_chat_model(user).rewind()
+            last_send, last_received  = genai.get_chat_model(user.email if user.is_authenticated else session_id).rewind()
             print(f"An error occurred: {e}")
             # Close the div if an error occurs
             context['isError'] = True
@@ -92,9 +93,9 @@ def index(request):
             res = None
             if 'image' in form.cleaned_data and form.cleaned_data['image']:
                 image = form.cleaned_data['image']
-                res = genai.image_model(request, image , message)
+                res = genai.image_model(user.email if user.is_authenticated else session_id, image , message)
             else:
-                res = genai.text_model(request,message)
+                res = genai.text_model(user.email if user.is_authenticated else session_id,message)
             prompt = message
             return StreamingHttpResponse(stream_response_generator(res,prompt, image, 
                                                                    Generator("request.user.email+request.user.username")))
@@ -117,7 +118,8 @@ def index(request):
                 #     print(data)
                 # except json.JSONDecodeError:
                 #     print("Invalid JSON format")
-                genai.set_chat(user,[] , True)
+                genai.set_chat(user.email if user.is_authenticated else session_id,[] , True)
+
                 current_chat_id = chat_id
                 return HttpResponse(render(request, 'main/chat.html', context))
 
@@ -131,7 +133,7 @@ def index(request):
 def updateHistoryMessage(request, modelResponse, image, prompt, history_id):
         date = datetime.now().date()
         date_time = datetime.now() 
-        current_history = genai.get_chat_model(request.user).history
+        current_history = genai.get_chat_model(request.user.email).history
 
         if not user_has_chat_history(request.user):
             history_id= Generator(request.user.email)
@@ -186,5 +188,5 @@ def redirect_page(request):
                
     else:
         current_chat_id = Generator(request.user.id)
-        genai.set_chat(request.user,[],True)
+        genai.set_chat(request.user.email if request.user.is_authenticated else request.session.session_key,[],True)
         return HttpResponse(render(request, 'main/chat.html', context))

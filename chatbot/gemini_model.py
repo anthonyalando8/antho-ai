@@ -20,14 +20,12 @@ class Model:
         for m in genai.list_models():
             if 'generateContent' in m.supported_generation_methods:
                 print(m.name)
-    def text_model(self, request, message="Hello?"):
-        user = request.user
-        response = self.text_models[user.email].send_message(message, stream=True)
+    def text_model(self, text_model_id, message="Hello?"):
+        response = self.text_models[text_model_id].send_message(message, stream=True)
         #response = self.get_chat(user).send_message(message, stream=True)
         return response
     
-    def image_model(self, request, img, message = None):
-        user = request.user
+    def image_model(self, image_model_id, img, message = None):
         img_bytes = img.read()
         pil_image = Image.open(io.BytesIO(img_bytes))
         if message == None:
@@ -38,11 +36,11 @@ class Model:
         return response
         
     
-    def set_chat(self, user, current_chat = [], overide=False):
-        if user.email not in self.text_models or overide:
+    def set_chat(self, text_model_id, current_chat = [], overide=False):
+        if text_model_id not in self.text_models or overide:
             print(current_chat)
-            self.text_models[user.email] = self.model_text.start_chat(history=current_chat)
-        return self.text_models[user.email]
+            self.text_models[text_model_id] = self.model_text.start_chat(history=current_chat)
+        return self.text_models[text_model_id]
 
-    def get_chat_model(self, user):
-        return self.text_models[user.email]
+    def get_chat_model(self, text_model_id):
+        return self.text_models[text_model_id]

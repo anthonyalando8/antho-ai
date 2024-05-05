@@ -75,7 +75,31 @@ Engage in dynamic conversations on SoftConnect. Interact with our AI model for i
         <div class="position-fixed end-0" style="bottom: 98px;">
             <button class="btn btn-success text-light m-2 bg-transparent" id="adjust-chat-button"><i class="fa-solid fa-arrow-down"></i></button>
         </div>
+        {% if not user.is_authenticated %}
+        <div class="p-3 position-absolute top-0 start-50 translate-middle-x" style="z-index: 11">
+            <div id="liveToast" class="toast" data-bs-autohide="false" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-body">
+                    <div class="row">
+                        <div class="col-10">
+                            Login to save your chat history.
+                        </div>
+                        <div class="col-2">
+                            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Initialize the toast -->
+        <script>
+            $(document).ready(function(){
+                $('.toast').toast('show');
+            });
+        </script>
+        
+         {% endif %}
     </div>
+    
     <div class="bg-transparent m-2 border rounded-pill ps-3 pe-3" id="chat-form">
         <form method="post" id="form" enctype="multipart/form-data">
             {% csrf_token %}
