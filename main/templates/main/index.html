@@ -20,6 +20,10 @@
   font-size: 1.5rem;
   border-radius: .75rem;
 }
+#floatingMessage{
+    resize: none;
+    height: 100px;
+}
 
 
 </style>
@@ -79,7 +83,7 @@
                 <p>Experience the power of AI! Engage with cutting-edge technology designed to revolutionize communication. 
                     Whether you have questions, need assistance, or simply want to explore its capabilities.</p>
                 <a href="#" class="btn btn-primary">
-                    Learn more
+                    Learn More
                 </a>
             </div>
         </div>
@@ -92,7 +96,7 @@
                 <p>Top up your airtime effortlessly with our convenient service! Enjoy seamless transactions and 
                     instant recharge for your mobile devices. Our platform offers a hassle-free solution..</p>
                 <a href="#" class="btn btn-primary">
-                    Buy now
+                    Learn More
                 </a>
             </div>
         </div>
@@ -106,7 +110,7 @@
                     internet subscriptions, and more with just a few clicks. 
                     Our secure platform ensures swift and hassle-free transactions</p>
                 <a href="#" class="btn btn-primary">
-                    Learn more
+                    Learn More
                 </a>
             </div>
         </div>
@@ -122,25 +126,99 @@
             </p>
         </div>
         <div class="col-md-10 mx-auto col-lg-5">
-            <form class="p-2 p-md-5 border rounded-3 bg-light">
+            <form class="p-2 p-md-5 border rounded-3 bg-light position-relative" method="post" id="form-message">
+                {% csrf_token %}
+                {% if not user.is_authenticated %}
+                <div class="alert alert-danger" role="alert">
+                    Login to send message!
+                </div>
+                <script>
+                    $(document).keypress(function(event) {
+                        // Check if the Enter key is pressed
+                        if (event.keyCode === 13) {
+                            event.preventDefault();
+                        }
+                    });
+                </script>
+                {% endif %}
+                <div class="position-absolute top-0 start-50 translate-middle-x"  id="message_response"></div>
                 <div class="form-floating mb-3">
-                    <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+                    <input type="email" class="form-control" id="floatingInput" name="user_email" {% if user.is_authenticated %} value="{{ user.email }}" {% endif %} placeholder="name@example.com" required>
                     <label for="floatingInput">Email address</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="floatingMessage" placeholder="Message">
+                    <input type="text" class="form-control" id="floatingName" name="user_name" placeholder="full name" required>
+                    <label for="floatingName">Full Name</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <textarea class="form-control" id="floatingMessage" name="message_body" required></textarea>
                     <label for="floatingMessage">Message</label>
                 </div>
                 <div class="checkbox mb-3">
                     <label>
-                    <input type="checkbox" value="urgent"> Urgent message
+                    <input type="checkbox" value="True" name="is_urgent"> Urgent message
                     </label>
                 </div>
-                <button class="w-100 btn btn-lg btn-primary" type="submit">Submit</button>
+                <input type="text" hidden value="send_message" name="send_message">
+                <button class="w-100 btn btn-lg btn-primary {% if not user.is_authenticated %} disabled {% endif %}" type="submit" id="bt_send_message" value="send_message">Submit</button>
                 <hr class="my-4"> 
                 <small class="text-muted">Someone will get back to you soon.</small>
             </form>
         </div>
+        <script>
+            $('#form-message').submit(function(event){
+                event.preventDefault();
+
+                var formData = new FormData(this);
+                var send_message_button = $('#form-message button[type="submit"]')
+                send_message_button.attr("disabled","disabled")
+
+                send_message_button.html(`<i class="fa-solid fa-spinner fa-spin-pulse"></i>`)
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response){
+                        send_message_button.removeAttr("disabled","disabled");
+                        send_message_button.html('Submit');
+                        
+                        var status = response.status;
+                        var messages = response.message;
+                        var status_message = "";
+                        $.each(messages, function(key, value) {
+                            status_message += `<span>${value}</span></br>`;
+                        });
+                    
+
+                        var response_alert = document.createElement('div');
+                        response_alert.classList.add("alert");
+                        response_alert.classList.add(status == "ok" ? "alert-success" : "alert-danger");
+                        response_alert.setAttribute("role","alert");
+                        $(response_alert).html(status_message);
+                        
+                        $("#message_response").html(response_alert);
+
+                        setTimeout(function(){
+                            $("#message_response").html("");
+                        }, 5000)
+                        $('#form-message')[0].reset();
+                        $('#message_response').scrollTop($('#message_response')[0].scrollHeight);
+
+                        
+                    },
+                    error: function(error){
+                        send_message_button.removeAttr("disabled","disabled")
+                        send_message_button.html('Submit')
+                        console.log(error);
+                        $('#form-message')[0].reset();
+
+                    }
+                })
+            })
+        </script>
+        
     </div>
 </div>
     
