@@ -7,4 +7,5 @@ urlpatterns = [
     path("",views.index, name="homepage"),
     path('airtime/', views.airtime, name='airtime'),
     path('about/', views.about, name='about'),
+    path('manage/admin/', views.admin_dashboard, name='admin'),
 ]

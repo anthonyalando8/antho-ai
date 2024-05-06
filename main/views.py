@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse,JsonResponse
 import africastalking
 from .models import InquiryMessage
-from datetime import datetime
+from datetime import datetime, timedelta
 from main . generate_random_hashed_string import Generator
+from django.contrib.auth.models import User
 # Create your views here.
 def index(request):
     user = request.user
@@ -43,6 +44,50 @@ def index(request):
 
             return JsonResponse(context_response)
     return render(request, "main/index.html", {'user':user})
+
+def admin_dashboard(request):
+    user = request.user
+    if user.is_authenticated:
+        for group in user.groups.all():
+            if group.name == "Admin":
+                if request.method == 'GET':
+                    inquiries = InquiryMessage.objects.filter(is_responded=False)
+                    
+                    
+                    context = {
+                        "messages": inquiries
+                    }
+                    return render(request, 'main/admin.html', context)
+                else:
+                    if request.POST.get("load_seven_range"):
+                        date_range = [datetime.now() - timedelta(days=i) for i in range(7)]
+                        user_counts_per_day = {}
+                        print(request.GET)
+                        for day in date_range:
+                            # Calculate the start and end of the day
+                            day_start = datetime(day.year, day.month, day.day, 0, 0, 0)
+                            day_end = datetime(day.year, day.month, day.day, 23, 59, 59)
+                            
+                            # Count the number of users who joined on the current day
+                            user_count = User.objects.filter(date_joined__range=(day_start, day_end)).count()
+                            
+                            # Store the count in the dictionary
+                            user_counts_per_day[day.strftime('%Y-%m-%d')] = user_count
+                        return JsonResponse(user_counts_per_day)
+
+        response_content = """
+        <html>
+        <head>
+            <meta http-equiv="refresh" content="2; url='/'">
+        </head>
+        <body>
+            <p>Not authorised to view this page! Redirecting...</p>
+        </body>
+        </html>
+        """
+        return HttpResponse(response_content)
+    else:
+        return redirect("auth0:login")
 
 def airtime(res):
     
