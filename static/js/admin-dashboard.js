@@ -2,6 +2,7 @@
 $(document).ready(function() {
 
   $("#form_dashboard_graph").submit(function(event){
+    $("#btn_load_seven_range").html(`<i class="fa-solid fa-spinner fa-spin-pulse"></i>`);
 
     event.preventDefault();
     var formData = new FormData(this)
@@ -13,7 +14,6 @@ $(document).ready(function() {
       processData: false,
       contentType: false,
       success: function(response){
-        console.log("response"+response)
         var labels = [];
         var values = [];
         $.each(response, function(key, value){
@@ -21,6 +21,7 @@ $(document).ready(function() {
           values.push(value)
         })
         drawGraph(labels, values)
+        $("#btn_load_seven_range").html("Refresh Graph")
       },
       error: function(xhr, status, error){
         console.error("Error:", error);

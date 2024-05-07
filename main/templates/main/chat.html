@@ -170,7 +170,7 @@ bg-dark
             $('#uploaded-img').attr('src', imageURL);
             // Show the modal
             $('#id_message').attr('placeholder', 'Add text message (Optional)')
-            $('#staticBackdrop').modal('show');
+            $('#modal-uploaded-image').modal('show');
 
         });
         $('#btn-change').click(function() {
@@ -180,7 +180,7 @@ bg-dark
         $('#clear-selection').click(function() {
             $('#uploaded-img').attr('src', '');
             $('#id_image').val('');
-            $('#staticBackdrop').modal('hide');
+            $('#modal-uploaded-image').modal('hide');
             $('#id_message').attr('placeholder','Enter message');
             $('#id_message').focus();
         });
@@ -260,3 +260,23 @@ bg-dark
     
     
 {%endblock%}
+{% block modal %}
+<div class="modal fade" id="modal-uploaded-image" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modal-uploaded-imageLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modal-uploaded-imageLabel">Uploaded Image</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <img class="img-fluid" id="uploaded-img" src=""/>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-danger" id="clear-selection">Clear</button>
+            <button type="button" class="btn btn-secondary" id="btn-change">Change</button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="close-modal">Ok</button>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}
