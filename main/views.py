@@ -14,7 +14,6 @@ def index(request):
         print("group",user_groups)
     
     if request.method == 'POST':
-        print(request.POST)
         if request.POST.get("send_message"):
             user_email = request.POST.get("user_email")
             user_name = request.POST.get("user_name")

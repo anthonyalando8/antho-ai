@@ -109,10 +109,10 @@ fetch(form.getAttribute("action"), {
                         }
                         // Process the received data (e.g., append to a DOM element)
                         // Convert Uint8Array to string
-                        const text = new TextDecoder().decode(value);
-                        
+                        const text = new TextDecoder().decode(value);                        
                         try {
                             // Parse the string as JSON
+                            console.log(text)
                             const jsonData = JSON.parse(text);
                             if(jsonData.isFirst){
                                 $("#chat").append(converted_to_html_user_avatar_name+`<div>${jsonData.prompt}</div>`)
@@ -150,7 +150,6 @@ fetch(form.getAttribute("action"), {
                                 $('#id_message').focus();
                             }
                             // Process the JSON data (e.g., append to a DOM element)
-                            console.log(jsonData);
                         } catch (error) {
                             console.error('Error parsing JSON:', error);
                             controller.error(error);

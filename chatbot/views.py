@@ -20,16 +20,10 @@ current_chat_id = None
 
 def index(request):
     user_agent = request.META.get('HTTP_USER_AGENT', '')
-    print(user_agent)
-    session_id = request.session.session_key
+    session_id = str(request.session.session_key)
+    print(session_id)
     
     user = request.user
-    # if not user.is_authenticated:
-    #     # Construct the login URL with the redirect URL parameter
-    #     current_url = request.build_absolute_uri()
-    #     login_url = reverse('auth0:login') + f'?redirect_url={current_url}'
-    #     return redirect(login_url)
-    
     
     def stream_response_generator(res, prompt, image, message_id):
         accumulatedResponse = ""
@@ -40,7 +34,6 @@ def index(request):
             "isFirst": True,
             "isLast": False,
             "isError": False,
-            "user": str(user),
             "onProgress":True,
             "image": image
         }
@@ -56,7 +49,6 @@ def index(request):
             # Call the updateHistoryMessage function after processing all chunks
             if user.is_authenticated:
                 updateHistoryMessage(request, accumulatedResponse, image, prompt, current_chat_id)
-            
             context['isLast'] = True
             context['isFirst'] = False
             context["onProgress"] = False
@@ -67,7 +59,7 @@ def index(request):
 
         except Exception as e:
             # Handle any exceptions that occur during the loop
-            last_send, last_received  = genai.get_chat_model(user.email if user.is_authenticated else session_id).rewind()
+            last_send, last_received  = genai.get_chat_model(user.email if user.is_authenticated else str(session_id)).rewind()
             print(f"An error occurred: {e}")
             context['isError'] = True
             context['error_message'] = str(e)
@@ -94,27 +86,30 @@ def index(request):
                                                                     Generator("request.user.email+request.user.username")),content_type="application/json")
         elif request.POST.get("get_ai_chats"):
             global current_chat_id
-            request_chat_id = request.POST.get("get_ai_chats")
-            if request_chat_id == "new_chat" or request_chat_id != str(get_user_cache(request.user, "previous_chat_id")):
-                current_chat_id = Generator(request.user.id)
-                print("New chart requested")
-                return JsonResponse({})
-            elif request_chat_id == str(get_user_cache(request.user, "previous_chat_id")):
-                try:
-                    print("Previous chart requested")
+            if request.user.is_authenticated:
+                request_chat_id = request.POST.get("get_ai_chats")
+                if request_chat_id == "new_chat" or request_chat_id != str(get_user_cache(request.user, "previous_chat_id")):
+                    current_chat_id = Generator(request.user.id)
+                    print("New chart requested")
+                    return JsonResponse({})
+                elif request_chat_id == str(get_user_cache(request.user, "previous_chat_id")):
+                    try:
+                        print("Previous chart requested")
 
-                    default_chat = ChatHistory.objects.get(user=request.user, history_id=request_chat_id)
-                    current_history_value = default_chat.current_history
-                    
-                    genai.set_chat(user.email if user.is_authenticated else session_id,[] , True)
+                        default_chat = ChatHistory.objects.get(user=request.user, history_id=request_chat_id)
+                        current_history_value = default_chat.current_history
+                        
+                        genai.set_chat(user.email if user.is_authenticated else str(session_id),[] , True)
 
-                    current_chat_id = request_chat_id
-                    return JsonResponse(serialize('json', default_chat.messages_set.all()), safe=False)
+                        current_chat_id = request_chat_id
+                        return JsonResponse(serialize('json', default_chat.messages_set.all()), safe=False)
 
-                except ChatHistory.DoesNotExist:
-                    current_chat_id = None
-                    cache.delete(f"{request.user.id}_previous_chat_id")
-                    print("No such history existing")
+                    except ChatHistory.DoesNotExist:
+                        current_chat_id = None
+                        cache.delete(f"{request.user.id}_previous_chat_id")
+                        print("No such history existing")
+                        return JsonResponse({})
+                else:
                     return JsonResponse({})
             else:
                 return JsonResponse({})
@@ -168,6 +163,7 @@ def redirect_page(request):
     form = CreateChatForm()
 
     cached_chat_id = get_user_cache(request.user, "previous_chat_id")
+    print(request.session.session_key)
     context = {
         "user": request.user,
         "form": form,
@@ -180,5 +176,5 @@ def redirect_page(request):
         current_chat_id = cached_chat_id
         context["default"]["chat_id"] = cached_chat_id
                
-    genai.set_chat(request.user.email if request.user.is_authenticated else request.session.session_key,[],True)
+    genai.set_chat(request.user.email if request.user.is_authenticated else str(request.session.session_key),[],True)
     return HttpResponse(render(request, 'main/chat.html', context))
