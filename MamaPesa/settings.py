@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'main.apps.MainConfig',
-    'mpesa_api',
+    #'mpesa_api',
     'chatbot.apps.ChatbotConfig',
     'vision',
     'auth0.apps.Auth0Config',
