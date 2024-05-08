@@ -23,6 +23,7 @@ bg-dark
 {% endblock %}
 {% block content %}
 {% load custom_filters %}
+{% load static %}
 
 <style>
     .top-section{
@@ -58,22 +59,8 @@ bg-dark
 <div class="h-100 mx-auto" id="chat-container">
     
     <div class="top-section position-relative"id="top">
-        <div  id="chat">
-            {% for chat in default %}
-                    <div class=" rounded m-2 p-1 text-light" id="prompt_{{ chat.request_id }}">
-                        {{ chat.message | prepend_username:user | convert_to_markdown|safe }}
-                        <div class="m-1 overflow-hidden" style="max-width: 500px; max-height: 500px;">
-                            {% if chat.image %}
-                                <img src="{{ chat.image.url }}" class="img-fluid rounded" alt="Image message">
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <div class=" rounded m-2 p-1 text-light" id="response_{{ chat.request_id }}">
-                        {{ chat.response | prepend_gemini | convert_to_markdown |safe }}
-                    </div>
-            {% endfor%}
-        </div>
+        <div id="chat" class="text-light"></div>
+        
         <div class="position-fixed end-0" style="bottom: 98px;">
             <button class="btn btn-success text-light m-2 bg-transparent" id="adjust-chat-button"><i class="fa-solid fa-arrow-down"></i></button>
         </div>
@@ -113,24 +100,22 @@ bg-dark
                     {{ form.image }}
                 </span>
                 {{ form.message }}
+                <input type="hidden" name="send_prompt" value="send_prompt">
                 <button type="submit" id="btn-submit"class="btn text-light btn-block disabled"><i class="fa-solid fa-paper-plane "></i></button>
             </div>
-        </form>  
+        </form>
+        
+
     </div>
 </div>
-<script>
-    // myapp/static/script.js
-
-    // $(document).ready(function() {
-    //     $.getJSON('/chat/', function(data) {
-    //         console.log("data:", data);
-    //     });
-    // });
-
-</script>
+<form method="POST" hidden id="ai_chat_form" action="{% url 'chatbot:chat' %}">
+    {% csrf_token %}
+    <input type="hidden" name="get_ai_chats" id="get_ai_chats" value="{{ default.chat_id }}">
+    <button type="submit" name="btn_get_chats" id="btn_get_chats"></button>
+</form>  
 <script>
     $('#id_message').on('input', function() {
-        var text = $(this).val().trim(); // Trim to remove whitespace
+        var text = $(this).val().trim(); 
         if (text === '') {
             $('#btn-submit').addClass('disabled');
         } else {
@@ -257,6 +242,8 @@ bg-dark
         });
     });
 </script>
+<script src="{% static 'js\ai-chats.js' %}"></script>
+
     
     
 {%endblock%}

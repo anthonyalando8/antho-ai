@@ -7,7 +7,7 @@ class Chat(models.Model):
 
 class ChatHistory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="chathistory", null=True)
-    history_id = models.CharField(max_length=100, null=True, blank=True)
+    history_id = models.CharField(max_length=100, primary_key=True)
     current_history = models.TextField()
     date = models.DateField()
 
