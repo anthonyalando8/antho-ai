@@ -90,7 +90,7 @@ bg-dark
     </div>
     
     <div class="bg-transparent m-2 border rounded-pill ps-3 pe-3" id="chat-form">
-        <form method="post" id="form" enctype="multipart/form-data">
+        <form method="post" id="form" action="{% url 'chatbot:chat' %}" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="input-group ">
                 <span class="input-group-text bg-transparent border-0" id="basic-addon1">
@@ -113,139 +113,9 @@ bg-dark
     <input type="hidden" name="get_ai_chats" id="get_ai_chats" value="{{ default.chat_id }}">
     <button type="submit" name="btn_get_chats" id="btn_get_chats"></button>
 </form>  
-<script>
-    $('#id_message').on('input', function() {
-        var text = $(this).val().trim(); 
-        if (text === '') {
-            $('#btn-submit').addClass('disabled');
-        } else {
-            $('#btn-submit').removeClass('disabled');
-        }
-    });
-    function adjustChatContainer() {
-        $("#chat-container").addClass("w-75");
-        $(window).resize(function(){
-            var viewportWidth = $(window).width();
-            if (viewportWidth < 800){
-                $("#chat-container").removeClass("w-75");
-                $("#chat-container").addClass("w-100");
-            }else{
-                $("#chat-container").removeClass("w-100");
-                $("#chat-container").addClass("w-75");
-            }
-        });
-        $(window).resize();
-    }
 
-    // Call the function when the page loads
-    $(document).ready(function(){
-        $('#id_message').focus();
-        adjustChatContainer();
-        $("#adjust-chat-button").click(function() {
-            $('#top').animate({
-            scrollTop: $('#top')[0].scrollHeight
-        }, 'slow');        
-        });
-        // Add change event listener to the input field
-        $('#id_image').change(function(event) {
-            var file = event.target.files[0];
-            // Create a URL for the selected file
-            var imageURL = URL.createObjectURL(file);
-            // Set the created URL as the src attribute of the img tag
-            $('#uploaded-img').attr('src', imageURL);
-            // Show the modal
-            $('#id_message').attr('placeholder', 'Add text message (Optional)')
-            $('#modal-uploaded-image').modal('show');
-
-        });
-        $('#btn-change').click(function() {
-            // Trigger click event on the file input field to open file selection dialog
-            $('#lbl-upload-image').click();
-        });
-        $('#clear-selection').click(function() {
-            $('#uploaded-img').attr('src', '');
-            $('#id_image').val('');
-            $('#modal-uploaded-image').modal('hide');
-            $('#id_message').attr('placeholder','Enter message');
-            $('#id_message').focus();
-        });
-        $('#close-modal').click(function() {
-            // Trigger click event on the file input field to open file selection dialog
-            $('#id_message').focus();
-        });
-    });
-
-    
-</script>
-<script>
-    $(document).ready(function() {
-        $('#top').animate({
-            scrollTop: $('#top')[0].scrollHeight
-        }, 'slow');
-        $('#id_message').keypress(function(event) {
-            // Check if the Enter key is pressed
-            if (event.keyCode === 13 && !event.shiftKey) {
-                event.preventDefault();
-                $('#btn-submit').click();
-            }
-        });
-        var appendedData = '';
-
-        $('#form').submit(function(event) {
-            // Prevent the default form submission
-            event.preventDefault();
-
-            // Serialize form data
-            var formData = new FormData(this);
-            // Reference to the submit button
-            var submitButton = $('#form button[type="submit"]');
-
-            submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
-            submitButton.attr("disabled","disabled");
-            var newDiv = $('<div class="border rounded m-2 p-1 bg-light"></div>');
-            // Clear form fields
-            $('#form')[0].reset();
-
-            // Send an AJAX request
-            $.ajax({
-                type: 'POST',
-                url: $(this).attr('action'),
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    // Update the content of a div with the new data
-                    console.log(response);
-                    submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
-                    submitButton.removeAttr("disabled")
-                    $('#id_message').attr('placeholder','Enter message');
-                    $('#id_message').focus();
-                    //$('#chat').html(response.html);
-                    appendedData = '';
-                },
-                error: function(error) {
-                    submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
-                    submitButton.removeAttr("disabled")
-                    console.log(error);
-                },
-                xhrFields: {
-                onprogress: function(event) {
-                        // Append the new data as it's being streamed
-                        var newData = event.target.responseText.substring(appendedData.length);
-                        newDiv.append(newData);
-                        $('#chat').append(newData);
-                        $('#top').scrollTop($('#top')[0].scrollHeight);
-                        appendedData += newData;
-                    }
-                }
-            });
-        });
-    });
-</script>
 <script src="{% static 'js\ai-chats.js' %}"></script>
-
-    
-    
+   
 {%endblock%}
 {% block modal %}
 <div class="modal fade" id="modal-uploaded-image" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modal-uploaded-imageLabel" aria-hidden="true">

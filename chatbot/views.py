@@ -12,6 +12,7 @@ import string
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers import serialize
+import json
 
 genai = Model()
 
@@ -33,27 +34,25 @@ def index(request):
     def stream_response_generator(res, prompt, image, message_id):
         accumulatedResponse = ""
         context = {
-            "message_id":message_id,
+            "message_id":str(message_id),
             "prompt": prompt,
             "res": "",
             "isFirst": True,
             "isLast": False,
             "isError": False,
-            "user": user,
+            "user": str(user),
             "onProgress":True,
             "image": image
         }
         try:
             for chunk in res:
-               
                 new_chunk = chunk.text
                 accumulatedResponse += new_chunk
                 context['res'] = accumulatedResponse
-                html_chunk = render_to_string('main/partial.html', context)
+                json_data = json.dumps(context).encode('utf-8')
                 context['isFirst'] = False
-                yield html_chunk
+                yield json_data
                 
-            
             # Call the updateHistoryMessage function after processing all chunks
             if user.is_authenticated:
                 updateHistoryMessage(request, accumulatedResponse, image, prompt, current_chat_id)
@@ -64,19 +63,15 @@ def index(request):
             context['res'] = ""
             
             # Done processing
-            html_chunk = render_to_string('main/partial.html', context)
-            yield html_chunk
-
-            
+            yield json.dumps(context).encode('utf-8')
 
         except Exception as e:
             # Handle any exceptions that occur during the loop
             last_send, last_received  = genai.get_chat_model(user.email if user.is_authenticated else session_id).rewind()
             print(f"An error occurred: {e}")
-            # Close the div if an error occurs
             context['isError'] = True
-            html_chunk = render_to_string('main/partial.html', context)
-            yield html_chunk
+            context['error_message'] = str(e)
+            yield json.dumps(context).encode('utf-8')
 
     prompt = ""
     image = None
@@ -93,10 +88,10 @@ def index(request):
                     image = form.cleaned_data['image']
                     res = genai.image_model(user.email if user.is_authenticated else session_id, image , message)
                 else:
-                    res = genai.text_model(user.email if user.is_authenticated else session_id,message)
+                    res = genai.text_model(user.email if user.is_authenticated else session_id, message)
                 prompt = message
                 return StreamingHttpResponse(stream_response_generator(res,prompt, image, 
-                                                                    Generator("request.user.email+request.user.username")))
+                                                                    Generator("request.user.email+request.user.username")),content_type="application/json")
         elif request.POST.get("get_ai_chats"):
             global current_chat_id
             request_chat_id = request.POST.get("get_ai_chats")
