@@ -144,14 +144,10 @@ fetch(form.getAttribute("action"), {
                             if("is_on_progress" in jsonData && jsonData.is_on_progress){
                                 var response_html = converter.makeHtml(jsonData.res)
                                 $(`#response_${jsonData.message_id}`).html(response_html)
-                                $('#top').scrollTop($('#top')[0].scrollHeight);
                             }
-                            if("is_complete" in jsonData && jsonData.is_complete){
-                                submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
-                                submitButton.removeAttr("disabled")
-                                $('#id_message').attr('placeholder','Enter message');
-                                $('#id_message').focus();
-                            }
+                            
+                            $('#top').scrollTop($('#top')[0].scrollHeight);
+
                             // Process the JSON data (e.g., append to a DOM element)
                         } catch (error) {
                             console.error('Error parsing JSON:', error);
