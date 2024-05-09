@@ -31,10 +31,7 @@ def index(request):
             "message_id":str(message_id),
             "prompt": prompt,
             "res": "",
-            "isFirst": True,
-            "isLast": False,
-            "isError": False,
-            "onProgress":True,
+            "is_first": True,
             "image": image
         }
         try:
@@ -43,26 +40,27 @@ def index(request):
                 accumulatedResponse += new_chunk
                 context['res'] = accumulatedResponse
                 json_data = json.dumps(context).encode('utf-8')
-                context['isFirst'] = False
+                context['is_first'] = False
+                context['is_on_progress'] = True
+
                 yield json_data
                 
             # Call the updateHistoryMessage function after processing all chunks
             if user.is_authenticated:
                 updateHistoryMessage(request, accumulatedResponse, image, prompt, current_chat_id)
-            context['isLast'] = True
-            context['isFirst'] = False
-            context["onProgress"] = False
-            context['res'] = ""
+            #context = {"is_complete": True}
             
             # Done processing
-            yield json.dumps(context).encode('utf-8')
+            #yield json.dumps({}).encode('utf-8')
 
         except Exception as e:
             # Handle any exceptions that occur during the loop
             last_send, last_received  = genai.get_chat_model(user.email if user.is_authenticated else str(session_id)).rewind()
             print(f"An error occurred: {e}")
-            context['isError'] = True
-            context['error_message'] = str(e)
+            context = {
+                "is_error": True,
+                "error_message": str(e)
+                }
             yield json.dumps(context).encode('utf-8')
 
     prompt = ""

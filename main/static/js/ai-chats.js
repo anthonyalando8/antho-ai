@@ -4,8 +4,8 @@ $(document).ready(function(){
 
     var user_avatar = "https://ik.imagekit.io/anthonyalando/Soft_Connect/user.png?updatedAt=1682239876486"
     var softchat_avatar = "https://ik.imagekit.io/anthonyalando/Soft_Connect/cpu.png?updatedAt=1715174298728"
-    var converted_to_html_user_avatar_name = converter.makeHtml(`<div markdown="1" class="d-flex align-items-center flex-row my-2"><div markdown="1">![your image](${user_avatar} =32x32 "You")</div><div markdown="1" class="mx-md-3 mx-2">**You**</div></div>`)
-    var converted_to_html_softchat_avatar_name = converter.makeHtml(`<div markdown="1" class="d-flex align-items-center flex-row my-2"><div markdown="1">![soft connect logo](${softchat_avatar} =32x32 "SoftChatAI")</div><div markdown="1" class="mx-md-3 mx-2"> **SoftChatAI**</div></div>`)
+    var converted_to_html_user_avatar_name = converter.makeHtml(`<div markdown="1" class="d-flex m-2 align-items-center flex-row my-2"><div markdown="1">![your image](${user_avatar} =32x32 "You")</div><div markdown="1" class="mx-md-3 mx-2">**You**</div></div>`)
+    var converted_to_html_softchat_avatar_name = converter.makeHtml(`<div markdown="1" class="d-flex m-2 align-items-center flex-row my-2"><div markdown="1">![soft connect logo](${softchat_avatar} =32x32 "SoftChatAI")</div><div markdown="1" class="mx-md-3 mx-2"> **SoftChatAI**</div></div>`)
                
     $("#ai_chat_form").submit(function(event){
         event.preventDefault();
@@ -36,12 +36,12 @@ $(document).ready(function(){
                         var image_html = ""
                         
                         if(image != null && image != ""){
-                            image_html = converter.makeHtml(`<div markdown="1" style="max-width: 500px; max-height: 500px" class"overflow-hidden">![Message Image](${image})</div>`)
+                            image_html = converter.makeHtml(`<div markdown="1" style="max-width: 500px; max-height: 500px" class="m-2 overflow-hidden">![Message Image](${image})</div>`)
                         }
                         // Convert Markdown to HTML
                         var response_to_html = converter.makeHtml(response)
-                        var response_ai_name = converted_to_html_softchat_avatar_name+`<div class="ml-2">${response_to_html}</div>`;
-                        var message_user_name = converted_to_html_user_avatar_name + `<div class="ml-2">${image_html}${message}</div>`;
+                        var response_ai_name = converted_to_html_softchat_avatar_name+`<div class="ml-2 m-2" >${response_to_html}</div>`;
+                        var message_user_name = converted_to_html_user_avatar_name + `<div class="ml-2 m-2">${image_html}${message}</div>`;
                         htmlData += (message_user_name+response_ai_name)
                         chathistory = element.fields.chatHistory
                     });
@@ -71,8 +71,8 @@ $(document).ready(function(){
 
     var user_avatar = "https://ik.imagekit.io/anthonyalando/Soft_Connect/user.png?updatedAt=1682239876486"
     var softchat_avatar = "https://ik.imagekit.io/anthonyalando/Soft_Connect/cpu.png?updatedAt=1715174298728"
-    var converted_to_html_user_avatar_name = converter.makeHtml(`<div markdown="1" class="d-flex align-items-center flex-row my-2"><div markdown="1">![your image](${user_avatar} =32x32 "You")</div><div markdown="1" class="mx-md-3 mx-2">**You**</div></div>`)
-    var converted_to_html_softchat_avatar_name = converter.makeHtml(`<div markdown="1" class="d-flex align-items-center flex-row my-2"><div markdown="1">![soft connect logo](${softchat_avatar} =32x32 "SoftChatAI")</div><div markdown="1" class="mx-md-3 mx-2"> **SoftChatAI**</div></div>`)
+    var converted_to_html_user_avatar_name = converter.makeHtml(`<div markdown="1" class="d-flex align-items-center flex-row mx-2 my-2"><div markdown="1">![your image](${user_avatar} =32x32 "You")</div><div markdown="1" class="mx-md-3 mx-2">**You**</div></div>`)
+    var converted_to_html_softchat_avatar_name = converter.makeHtml(`<div markdown="1" class="d-flex align-items-center flex-row mx-2 my-2"><div markdown="1">![soft connect logo](${softchat_avatar} =32x32 "SoftChatAI")</div><div markdown="1" class="mx-md-3 mx-2"> **SoftChatAI**</div></div>`)
        
 const form = document.getElementById('form');
 
@@ -104,26 +104,29 @@ fetch(form.getAttribute("action"), {
                 function read() {
                     reader.read().then(({ done, value }) => {
                         if (done) {
+                            submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
+                            submitButton.removeAttr("disabled")
+                            $('#id_message').attr('placeholder','Enter message');
+                            $('#id_message').focus();
                             controller.close();
                             return;
                         }
                         // Process the received data (e.g., append to a DOM element)
                         // Convert Uint8Array to string
-                        const text = new TextDecoder().decode(value);                        
+                        const text = new TextDecoder().decode(value);  
                         try {
                             // Parse the string as JSON
-                            console.log(text)
                             const jsonData = JSON.parse(text);
-                            if(jsonData.isFirst){
-                                $("#chat").append(converted_to_html_user_avatar_name+`<div>${jsonData.prompt}</div>`)
+                            if("is_first" in jsonData && jsonData.is_first){
+                                $("#chat").append(converted_to_html_user_avatar_name+`<div class="m-2">${jsonData.prompt}</div>`)
                                 $("#chat").append(converted_to_html_softchat_avatar_name)
                                 var response_html = converter.makeHtml(jsonData.res)
-                                $("#chat").append(`<div id="response_${jsonData.message_id}">${response_html}</div>`)
+                                $("#chat").append(`<div id="response_${jsonData.message_id}" class="m-2">${response_html}</div>`)
                             }
-                            if(jsonData.isError){
+                            if("is_error" in jsonData && jsonData.is_error){
                                 $("#chat").append(
                                     `
-                                    <div class="border rounded m-2 p-1 alert alert-danger d-flex align-items-center" role="alert">
+                                    <div class="border m-2 rounded m-2 p-1 alert alert-danger d-flex align-items-center" role="alert">
                                         <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
                                         <div>
                                             Error occurred! Refresh this chat <a href="{% url 'chatbot:chat' %}" class="alert-link">Reload</a>
@@ -138,12 +141,12 @@ fetch(form.getAttribute("action"), {
                                 submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
                                 submitButton.removeAttr("disabled")
                             }
-                            if(jsonData.onProgress && !jsonData.isFirst){
+                            if("is_on_progress" in jsonData && jsonData.is_on_progress){
                                 var response_html = converter.makeHtml(jsonData.res)
                                 $(`#response_${jsonData.message_id}`).html(response_html)
                                 $('#top').scrollTop($('#top')[0].scrollHeight);
                             }
-                            if(jsonData.isLast){
+                            if("is_complete" in jsonData && jsonData.is_complete){
                                 submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
                                 submitButton.removeAttr("disabled")
                                 $('#id_message').attr('placeholder','Enter message');
