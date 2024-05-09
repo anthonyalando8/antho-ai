@@ -104,18 +104,20 @@ fetch(form.getAttribute("action"), {
                 function read() {
                     reader.read().then(({ done, value }) => {
                         if (done) {
+                            submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
+                            submitButton.removeAttr("disabled")
+                            $('#id_message').attr('placeholder','Enter message');
+                            $('#id_message').focus();
                             controller.close();
                             return;
                         }
                         // Process the received data (e.g., append to a DOM element)
                         // Convert Uint8Array to string
-                        const text = new TextDecoder().decode(value);                        
+                        const text = new TextDecoder().decode(value);  
                         try {
                             // Parse the string as JSON
                             const jsonData = JSON.parse(text);
-                            console.log("JSON Received: "+jsonData)
                             if("is_first" in jsonData && jsonData.is_first){
-                                console.log("First data received")
                                 $("#chat").append(converted_to_html_user_avatar_name+`<div class="m-2">${jsonData.prompt}</div>`)
                                 $("#chat").append(converted_to_html_softchat_avatar_name)
                                 var response_html = converter.makeHtml(jsonData.res)
@@ -142,6 +144,7 @@ fetch(form.getAttribute("action"), {
                             if("is_on_progress" in jsonData && jsonData.is_on_progress){
                                 var response_html = converter.makeHtml(jsonData.res)
                                 $(`#response_${jsonData.message_id}`).html(response_html)
+                                $('#top').scrollTop($('#top')[0].scrollHeight);
                             }
                             if("is_complete" in jsonData && jsonData.is_complete){
                                 submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
@@ -149,8 +152,6 @@ fetch(form.getAttribute("action"), {
                                 $('#id_message').attr('placeholder','Enter message');
                                 $('#id_message').focus();
                             }
-                            $('#top').scrollTop($('#top')[0].scrollHeight);
-
                             // Process the JSON data (e.g., append to a DOM element)
                         } catch (error) {
                             console.error('Error parsing JSON:', error);
