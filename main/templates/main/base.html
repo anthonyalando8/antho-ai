@@ -69,7 +69,10 @@
                         {% endif %}
                     {% endfor %}
                     <li class="nav-item">
-                        <a class="nav-link disabled" tabindex="-1" aria-disabled="true" href="/airtime">Buy airtime</a>
+                        <a class="nav-link disabled" tabindex="-1" aria-disabled="true" href="/airtime">Utility</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="/vision">Tools</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link disabled" tabindex="-1" aria-disabled="true" href="/mpesa">Mpesa</a>
@@ -77,6 +80,7 @@
                     <li class="nav-item">
                         <a class="nav-link " href="/about">About Us</a>
                     </li>
+                    
                     <li class="nav-item">
                         <a class="nav-link btn btn-warning text-dark" href="{% url 'chatbot:chat' %}">AI Assistant</a>
                     </li>
@@ -91,7 +95,7 @@
                         </span>
                     </div>
                 </form>
-                <div class="dropdown d-flex text-end mx-md-5 my-2 my-md-0">
+                <div class="dropdown d-flex text-end ms-md-1 me-md-4 my-2 my-md-0">
                     <a href="#" class="d-block position-relative link-light text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
                       <img src="https://ik.imagekit.io/anthonyalando/Soft_Connect/user.png?updatedAt=1682239876486" alt="user" width="32" height="32" class="rounded-circle">
                       {% if user.is_authenticated %}
@@ -108,9 +112,7 @@
                             Sign In
                             <span class="position-absolute top-0 start-100 translate-middle badge border border-light rounded-circle bg-info p-1"><span class="visually-hidden">Login</span></span>
                         {% endif %}
-                      <!-- <span class="position-absolute top-0 start-100 translate-middle badge border border-light rounded-circle bg-info p-1"> -->
-                        <!-- <span class="visually-hidden">Login</span> -->
-                        </span>
+
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                       {% if user.is_authenticated %}

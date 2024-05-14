@@ -41,7 +41,7 @@
     <div class="position-sticky pt-3">
       <ul class="nav nav-list flex-column">
         <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'main:homepage' %}">
+            <a class="nav-link" href="{% url 'main:homepage' %}">
               <span><i class="fa-solid fa-house"></i></span>
               Home
             </a>
@@ -63,13 +63,15 @@
             <span><i class="fa-solid fa-message"></i></span>
             Messages
             {% if messages.count > 0 %}
-            <span class="badge rounded-pill bg-danger mx-2 mx-md-4">
-                <small>
-                    {% if messages.count < 100 %}
+            <span class="badge rounded-pill bg-danger mx-2 mx-md-4" id="badge-message-count">
+                <small >
+                    <!-- {% if messages.count < 100 %}
                     {{messages.count}}
                     {% else %}
                     99+
-                    {% endif %}
+                    {% endif %} -->
+                    {% block msg-number %}
+                    {% endblock %}
                 </small>
             </span>
             {% endif %}

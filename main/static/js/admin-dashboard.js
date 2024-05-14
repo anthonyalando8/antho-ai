@@ -6,6 +6,7 @@ $(document).ready(function() {
 
     event.preventDefault();
     var formData = new FormData(this)
+    console.log(formData)
     $.ajax({
       type: 'POST',
       url: $(this).attr('action'),
@@ -20,7 +21,7 @@ $(document).ready(function() {
           values.push(value)
         })
         drawGraph(labels, values)
-        $("#btn_load_seven_range").html("Refresh Graph")
+        $("#btn_load_seven_range").html(`<i class="fa-solid fa-arrows-rotate"></i>`)
       },
       error: function(xhr, status, error){
         console.error("Error:", error);

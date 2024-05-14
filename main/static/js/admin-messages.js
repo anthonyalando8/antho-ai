@@ -38,11 +38,8 @@ $(document).ready(function(){
                 contentType: false,
                 success: function(response){
                     var jsonData = JSON.parse(response);
-                    console.log(jsonData);
                     jsonData.forEach(function(obj) {
                         // Access fields of each object
-                        console.log(obj.fields.user);
-                        console.log(obj.fields.email);
                         var table_row_body = document.createElement("tr");
                         var td_id = document.createElement("td");
                         
@@ -77,6 +74,7 @@ $(document).ready(function(){
                     table.appendChild(table_body)
                     table_container.appendChild(table);
                     $("#main").html(table_container);
+                    $("#badge-message-count").html(jsonData.length)
 
                 },
                 error: function(error){

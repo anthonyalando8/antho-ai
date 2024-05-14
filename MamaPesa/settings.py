@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     'main.apps.MainConfig',
     #'mpesa_api',
     'chatbot.apps.ChatbotConfig',
-    'vision',
+    'vision.apps.VisionConfig',
     'auth0.apps.Auth0Config',
 ]
 
