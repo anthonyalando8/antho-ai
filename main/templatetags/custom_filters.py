@@ -1,5 +1,3 @@
-import markdown
-import textwrap
 from django import template
 import re
 
