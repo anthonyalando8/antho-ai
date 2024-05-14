@@ -31,9 +31,8 @@ SECRET_KEY = 'django-insecure-7_0r_pc^w1p5ho9wfw3ep)u8(^grx2486f7824^_)df3dbz$^_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['antho-soft-feafcde0b653.herokuapp.com',
+ALLOWED_HOSTS = ['softconnect-ce8065bce25a.herokuapp.com',
                  '127.0.0.1',
-                 '192.168.1.102',
                  'anthony001.pythonanywhere.com']
 
 
