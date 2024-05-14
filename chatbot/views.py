@@ -1,12 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from .forms import CreateChatForm
 from .gemini_model import Model
 from main.generate_random_hashed_string import Generator
-from django.template.loader import render_to_string
-import markdown
 from datetime import datetime
-from . models import ChatHistory, Messages
+from . models import ChatHistory
 import random
 import string
 from django.core.cache import cache
