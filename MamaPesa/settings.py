@@ -33,6 +33,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['softconnect-ce8065bce25a.herokuapp.com',
                  '127.0.0.1',
+                 'softconnectai.tech',
                  'anthony001.pythonanywhere.com']
 
 

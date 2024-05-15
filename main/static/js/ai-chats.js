@@ -46,6 +46,7 @@ $(document).ready(function(){
                         chathistory = element.fields.chatHistory
                     });
                     $("#chat").html(htmlData)
+                    
                     $("#get_ai_chats").attr("value", chathistory)
                     console.log($("#get_ai_chats").attr("value"))
 
@@ -130,7 +131,7 @@ fetch(form.getAttribute("action"), {
                                     <div class="border m-2 rounded m-2 p-1 alert alert-danger d-flex align-items-center" role="alert">
                                         <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
                                         <div>
-                                            Error occurred! Refresh this chat <a href="{% url 'chatbot:chat' %}" class="alert-link">Reload</a>
+                                            Error occurred! Refresh this chat <a href="/chat/" class="alert-link">Reload</a>
                                         </div>
                                         
                                     </div>

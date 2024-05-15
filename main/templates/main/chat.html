@@ -24,7 +24,7 @@ bg-dark
 {% block content %}
 {% load custom_filters %}
 {% load static %}
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
 <style>
     .top-section{
         -ms-overflow-style: none;  /* IE and Edge */
@@ -52,6 +52,11 @@ bg-dark
     label{
         cursor: pointer;
     }
+    [class^="language-"] {
+        color: red;
+}
+
+   
     
 </style>
 
@@ -65,7 +70,7 @@ bg-dark
             <button class="btn btn-success text-light m-2 bg-transparent" id="adjust-chat-button"><i class="fa-solid fa-arrow-down"></i></button>
         </div>
         {% if not user.is_authenticated %}
-        <div class="p-3 position-absolute top-0 start-50 translate-middle-x" style="z-index: 11">
+        <div class="p-3 position-absolute top-0 start-50 translate-middle-x max-vw-100" style="z-index: 11">
             <div id="liveToast" class="toast" data-bs-autohide="false" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="toast-body">
                     <div class="row">
@@ -136,4 +141,6 @@ bg-dark
       </div>
     </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
 {% endblock %}
