@@ -40,8 +40,9 @@ def index(request):
                 json_data = json.dumps(context).encode('utf-8')
                 context['is_first'] = False
                 context['is_on_progress'] = True
-
+                json_data += b'\n'
                 yield json_data
+                
                 
             # Call the updateHistoryMessage function after processing all chunks
             if user.is_authenticated:
