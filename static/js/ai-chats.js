@@ -114,6 +114,7 @@ fetch(form.getAttribute("action"), {
                         // Process the received data (e.g., append to a DOM element)
                         // Convert Uint8Array to string
                         const text = new TextDecoder().decode(value);  
+                        console.log(text)
                         try {
                             // Parse the string as JSON
                             const jsonData = JSON.parse(text);
