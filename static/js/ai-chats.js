@@ -20,6 +20,7 @@ $(document).ready(function(){
                 // Check if response is empty
                 if ($.isEmptyObject(response)) {
                     console.log("Response is empty");
+                    console.log("static/js used")
                     return;
                 } 
                 try {
@@ -45,7 +46,6 @@ $(document).ready(function(){
                         htmlData += (message_user_name+response_ai_name)
                         chathistory = element.fields.chatHistory
                     });
-                    htmlData = hljs.highlightElement(htmlData);
                     $("#chat").html(htmlData)
                     
                     $("#get_ai_chats").attr("value", chathistory)
