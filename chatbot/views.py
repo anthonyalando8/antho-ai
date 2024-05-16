@@ -14,16 +14,12 @@ import json
 
 genai = Model()
 
-current_chat_id = None
 
 def index(request):
+
     user_agent = request.META.get('HTTP_USER_AGENT', '')
-    session_id = str(request.session.session_key)
-    print(session_id)
-    
     user = request.user
-    
-    def stream_response_generator(res, prompt, image, message_id):
+    def stream_response_generator(res, prompt, image, message_id, request_session_id, request_chat_id):
         accumulatedResponse = ""
         context = {
             "message_id":str(message_id),
@@ -46,15 +42,11 @@ def index(request):
                 
             # Call the updateHistoryMessage function after processing all chunks
             if user.is_authenticated:
-                updateHistoryMessage(request, accumulatedResponse, image, prompt, current_chat_id)
-            #context = {"is_complete": True}
-            
-            # Done processing
-            #yield json.dumps({}).encode('utf-8')
+                updateHistoryMessage(request, accumulatedResponse, image, prompt, request_chat_id)
 
         except Exception as e:
             # Handle any exceptions that occur during the loop
-            last_send, last_received  = genai.get_chat_model(user.email if user.is_authenticated else str(session_id)).rewind()
+            last_send, last_received  = genai.get_chat_model(user.email if user.is_authenticated else request_session_id).rewind()
             print(f"An error occurred: {e}")
             context = {
                 "is_error": True,
@@ -67,26 +59,37 @@ def index(request):
 
     if request.method == "POST":
         if request.POST.get("send_prompt"):
+            request_session_id = request.POST.get("session_id")
+            request_chat_id = request.POST.get("request_chat_id")
+            genai.set_chat(user.email if user.is_authenticated else request_session_id,[] , False)
+
             form = CreateChatForm(request.POST, request.FILES)
             if form.is_valid():
                 message = form.cleaned_data['message']
-                print("Form.cleaned_data:", form.cleaned_data)
-                #chats = None
                 res = None
                 if 'image' in form.cleaned_data and form.cleaned_data['image']:
                     image = form.cleaned_data['image']
-                    res = genai.image_model(user.email if user.is_authenticated else session_id, image , message)
+                    
+                    res = genai.image_model(user.email if user.is_authenticated else request_session_id, image , message)
+                    
                 else:
-                    res = genai.text_model(user.email if user.is_authenticated else session_id, message)
+                    try:
+                        res = genai.text_model(user.email if user.is_authenticated else request_session_id, message)
+                    except KeyError as e:
+                        context = {
+                                "is_error": True,
+                                "error_message": "Key Error {}".format(str(e))
+                        }
+                        return JsonResponse(context)
                 prompt = message
                 return StreamingHttpResponse(stream_response_generator(res,prompt, image, 
-                                                                    Generator("request.user.email+request.user.username")),content_type="application/json")
+                                                                    Generator("request.user.email+request.user.username"),
+                                                                    request_session_id, request_chat_id),content_type="application/json")
         elif request.POST.get("get_ai_chats"):
-            global current_chat_id
             if request.user.is_authenticated:
                 request_chat_id = request.POST.get("get_ai_chats")
                 if request_chat_id == "new_chat" or request_chat_id != str(get_user_cache(request.user, "previous_chat_id")):
-                    current_chat_id = Generator(request.user.id)
+                    
                     print("New chart requested")
                     return JsonResponse({})
                 elif request_chat_id == str(get_user_cache(request.user, "previous_chat_id")):
@@ -96,13 +99,11 @@ def index(request):
                         default_chat = ChatHistory.objects.get(user=request.user, history_id=request_chat_id)
                         current_history_value = default_chat.current_history
                         
-                        genai.set_chat(user.email if user.is_authenticated else str(session_id),[] , True)
+                        #genai.set_chat(user.email if user.is_authenticated else str(session_id),[] , True)
 
-                        current_chat_id = request_chat_id
                         return JsonResponse(serialize('json', default_chat.messages_set.all()), safe=False)
 
                     except ChatHistory.DoesNotExist:
-                        current_chat_id = None
                         cache.delete(f"{request.user.id}_previous_chat_id")
                         print("No such history existing")
                         return JsonResponse({})
@@ -116,6 +117,8 @@ def index(request):
         return redirect_page(request)
 
 def updateHistoryMessage(request, modelResponse, image, prompt, history_id):
+        if history_id == "new_chat":
+            history_id = Generator(request.user.email)
         date = datetime.now().date()
         date_time = datetime.now() 
         current_history = genai.get_chat_model(request.user.email).history
@@ -160,18 +163,16 @@ def redirect_page(request):
     form = CreateChatForm()
 
     cached_chat_id = get_user_cache(request.user, "previous_chat_id")
-    print(request.session.session_key)
+    session_id = str(request.session._get_or_create_session_key())
     context = {
         "user": request.user,
         "form": form,
-        "default": {"chat_id": "new_chat"}
+        "default": {"chat_id": "new_chat",
+                    "session_id": session_id}
     }
-    global current_chat_id
-    current_chat_id = Generator(request.user.id)
-
+    
     if cached_chat_id is not None:
-        current_chat_id = cached_chat_id
         context["default"]["chat_id"] = cached_chat_id
                
-    genai.set_chat(request.user.email if request.user.is_authenticated else str(request.session.session_key),[],True)
+    genai.set_chat(request.user.email if request.user.is_authenticated else session_id,[],True)
     return HttpResponse(render(request, 'main/chat.html', context))

@@ -97,6 +97,9 @@ bg-dark
     <div class="bg-transparent m-2 border rounded-pill ps-3 pe-3" id="chat-form">
         <form method="post" id="form" action="{% url 'chatbot:chat' %}" enctype="multipart/form-data">
             {% csrf_token %}
+            <input type="hidden" name="send_prompt" value="send_prompt">
+            <input type="hidden" name="session_id" value="{{ default.session_id }}">
+            <input type="hidden" name="request_chat_id" id="request_chat_id" value="{{ default.chat_id }}">
             <div class="input-group ">
                 <span class="input-group-text bg-transparent border-0" id="basic-addon1">
                     <label for="id_image" class="text-light bg-transparent" id="lbl-upload-image">
@@ -105,7 +108,7 @@ bg-dark
                     {{ form.image }}
                 </span>
                 {{ form.message }}
-                <input type="hidden" name="send_prompt" value="send_prompt">
+                
                 <button type="submit" id="btn-submit"class="btn text-light btn-block disabled"><i class="fa-solid fa-paper-plane "></i></button>
             </div>
         </form>
