@@ -19,7 +19,8 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 from django.contrib.sitemaps.views import sitemap
 from main.sitemap import ClassSitemap
-
+from django.conf import settings
+from django.conf.urls.static import static
 sitemaps = {
     'static': ClassSitemap,
 }
@@ -34,3 +35,5 @@ urlpatterns = [
     path('google07949db9b98a31b8.html', TemplateView.as_view(template_name="main/google07949db9b98a31b8.html")),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

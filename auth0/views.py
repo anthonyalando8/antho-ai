@@ -4,7 +4,7 @@ from . forms import RegisterForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout
 # Create your views here.
-redirect_link = 'home:homepage'
+redirect_link = 'main:homepage'
 def register(request):
     global redirect_link
     if request.method == "POST":
@@ -27,8 +27,7 @@ def login_view(request):
 
             return redirect(redirect_url)
     else:
-        redirect_link = request.META.get('HTTP_REFERER')
-        print(redirect_link)
+        #redirect_link = request.META.get('HTTP_REFERER')
 
         form = AuthenticationForm()
     return render(request, 'auth0/login.html',{'form':form})
