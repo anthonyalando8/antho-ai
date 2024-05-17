@@ -1,0 +1,50 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MRJ5QRJ');
+</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MRJ5QRJ"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<!-- main content
+================================================== -->
+<main id="main-404-content" class="main-content-particle-js">
+<div class="content-wrap">
+<div class="shadow-overlay"></div>
+<div class="main-content">
+<div class="row">
+<div class="col-twelve">
+<h1 class="kern-this">404 Error.</h1>
+
+<p>
+Oooooops! Looks like nothing was found at this location.
+Maybe try one of the links below, click on the top menu
+or try a search?
+</p>
+{% comment %} 
+<div class="search">
+<form>
+<input type="text" id="s" name="s" class="search-field" placeholder="Type and hit enter …">
+</form>
+</div>
+{% endcomment %}
+</div>
+<!-- /twelve -->					
+</div>
+<!-- /row -->					
+</div>
+<!-- /main-content -->
+
+</div>
+<!-- /content-wrap -->
+</main>
+{% endblock %}

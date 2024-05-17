@@ -8,42 +8,45 @@ from django.contrib.auth.models import User
 from django.core.serializers import serialize
 # Create your views here.
 def index(request):
-    user = request.user
-    if user.is_authenticated:
-        user_groups = user.groups.all()
-        print("group",user_groups)
-    
-    if request.method == 'POST':
-        if request.POST.get("send_message"):
-            user_email = request.POST.get("user_email")
-            user_name = request.POST.get("user_name")
-            urgent = request.POST.get("is_urgent")
-            message_body = request.POST.get("message_body")
-            form_is_valid = True
-            is_urgent = True if urgent else False
+    try:
+        user = request.user
+        if user.is_authenticated:
+            user_groups = user.groups.all()
+        
+        if request.method == 'POST':
+            if request.POST.get("send_message"):
+                user_email = request.POST.get("user_email")
+                user_name = request.POST.get("user_name")
+                urgent = request.POST.get("is_urgent")
+                message_body = request.POST.get("message_body")
+                form_is_valid = True
+                is_urgent = True if urgent else False
 
-            context_response ={
-                'status': 'ok', 
-                'message': {'status_ok':'Message sent successfully!'}
-            }
+                context_response ={
+                    'status': 'ok', 
+                    'message': {'status_ok':'Message sent successfully!'}
+                }
 
-            if len(message_body) > 300:
-                context_response['status'] = 'error'
-                context_response["message"].pop("status_ok")
-                context_response["message"] = {'status_error_message_body': "Message too long!"}
-                form_is_valid = False
-            if len(user_name) > 50:
-                context_response["message"].pop("status_ok")
-                if context_response["status"] != 'error':
-                    context_response["status"] = 'error'
-                context_response["message"]["status_error_user_name"] = "username too long"
-                form_is_valid = False
+                if len(message_body) > 300:
+                    context_response['status'] = 'error'
+                    context_response["message"].pop("status_ok")
+                    context_response["message"] = {'status_error_message_body': "Message too long!"}
+                    form_is_valid = False
+                if len(user_name) > 50:
+                    context_response["message"].pop("status_ok")
+                    if context_response["status"] != 'error':
+                        context_response["status"] = 'error'
+                    context_response["message"]["status_error_user_name"] = "username too long"
+                    form_is_valid = False
 
-            if form_is_valid:
-                context_response = send_message_inquiry(request.user,user_email,user_name, is_urgent, message_body, context_response)
+                if form_is_valid:
+                    context_response = send_message_inquiry(request.user,user_email,user_name, is_urgent, message_body, context_response)
 
-            return JsonResponse(context_response)
-    return render(request, "main/index.html", {'user':user})
+                return JsonResponse(context_response)
+        return render(request, "main/index.html", {'user':user})
+    except Exception as e:
+        print(e)
+        return HttpResponse(str("Something went wrong!!!..."))
 
 def admin_dashboard(request):
     user = request.user
@@ -165,3 +168,9 @@ def send_message_inquiry(user, user_email, user_name, is_urgent,message_body , c
         context_response["message"]["status_error_save"] = "Something went wrong!"
         print("An error occurred:", str(e))
     return context_response
+
+def error_404_view(request, exception):
+   
+    # we add the path to the 404.html file
+    # here. The name of our HTML file is 404.html
+    return render(request, 'main/404.html')
