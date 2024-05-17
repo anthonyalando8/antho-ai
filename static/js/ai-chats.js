@@ -132,7 +132,7 @@ $(document).ready(function(){
                                             <div class="border m-2 rounded m-2 p-1 alert alert-danger d-flex align-items-center" role="alert">
                                                 <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
                                                 <div>
-                                                    Error occurred! Refresh this chat <a href="/chat/" class="alert-link">Reload</a>
+                                                    ${jsonData.error_message} <a href="/chat/" class="alert-link">Reload</a>
                                                 </div>
                                                 
                                             </div>

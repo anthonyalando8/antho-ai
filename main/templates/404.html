@@ -1,0 +1,37 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+<!-- Google Tag Manager -->
+<script>
+(function(w,d,s,l,i){
+    w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
+    var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;
+    j.src= 'https://www.googletagmanager.com/gtm.js?id='+i+dl;
+    f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MRJ5QRJ');
+</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MRJ5QRJ"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<!-- main content
+================================================== -->
+<div class="row w-100 text-muted">
+    <div class="col-12 col-md-10 col-lg-8 mx-auto p-2 p-md-3">
+        <div class="h1">404 Not found.</div>
+
+        <p class="fs-5 lead">
+        Oooooops! Looks like nothing was found at this location.
+        Maybe try one of the links below, click on the top menu
+        or try a search?
+        </p>
+        
+    </div>
+<!-- /twelve -->					
+</div>
+<!-- /row -->					
+
+{% endblock %}

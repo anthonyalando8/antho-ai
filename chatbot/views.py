@@ -11,6 +11,9 @@ from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers import serialize
 import json
+from PIL import Image
+import base64
+import io
 
 genai = Model()
 
@@ -21,12 +24,20 @@ def index(request):
     user = request.user
     def stream_response_generator(res, prompt, image, message_id, request_session_id, request_chat_id):
         accumulatedResponse = ""
+        try:
+            img_data = image.read()
+            # Encode the byte array as base64
+            base64_image = base64.b64encode(img_data).decode("utf-8")
+            print("base64: ", base64_image)
+        except Exception as e:
+            print(e)
+            base64_image = None
         context = {
             "message_id":str(message_id),
             "prompt": prompt,
             "res": "",
             "is_first": True,
-            "image": image
+            "image": base64_image
         }
         try:
             for chunk in res:
@@ -46,11 +57,12 @@ def index(request):
 
         except Exception as e:
             # Handle any exceptions that occur during the loop
-            last_send, last_received  = genai.get_chat_model(user.email if user.is_authenticated else request_session_id).rewind()
+            if image == None:
+                last_send, last_received  = genai.get_chat_model(user.email if user.is_authenticated else request_session_id).rewind()
             print(f"An error occurred: {e}")
             context = {
                 "is_error": True,
-                "error_message": str(e)
+                "error_message": "Generate error! Trying reloading"
                 }
             yield json.dumps(context).encode('utf-8')
 
@@ -78,7 +90,7 @@ def index(request):
                     except KeyError as e:
                         context = {
                                 "is_error": True,
-                                "error_message": "Key Error {}".format(str(e))
+                                "error_message": "Requested engine does not exist!"
                         }
                         return JsonResponse(context)
                 prompt = message
