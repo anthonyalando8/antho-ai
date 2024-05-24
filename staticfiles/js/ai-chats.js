@@ -47,6 +47,7 @@ $(document).ready(function(){
                         chathistory = element.fields.chatHistory
                     });
                     $("#chat").html(htmlData)
+                    hljs.highlightAll()
                     
                     $("#get_ai_chats").attr("value", chathistory)
                     console.log($("#get_ai_chats").attr("value"))
@@ -81,6 +82,8 @@ $(document).ready(function(){
     // Add an event listener to the form submission
     form.addEventListener('submit', async function(event) {
         // Prevent the default form submission
+        $('#btn-submit').addClass('disabled');
+
         event.preventDefault();
         var submitButton = $('#form button[type="submit"]');
 
@@ -111,6 +114,7 @@ $(document).ready(function(){
                                     $('#id_message').attr('placeholder','Enter message');
                                     $('#id_message').focus();
                                     controller.close();
+                                    hljs.highlightAll()
                                     return;
                                 }
                                 // Process the received data (e.g., append to a DOM element)
@@ -148,12 +152,13 @@ $(document).ready(function(){
                                         var response_html = converter.makeHtml(jsonData.res)
                                         $(`#response_${jsonData.message_id}`).html(response_html)
                                     }
-                                    
+                                    hljs.highlightAll()
                                     $('#top').scrollTop($('#top')[0].scrollHeight);
 
                                     // Process the JSON data (e.g., append to a DOM element)
                                 } catch (error) {
                                     console.error('Error parsing JSON:', error);
+                                    hljs.highlightAll()
                                     controller.error(error);
                                 }
                                 // Continue reading

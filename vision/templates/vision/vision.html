@@ -1,6 +1,6 @@
 {% extends 'main/base.html' %}
 
-    
+{% block class_active_vision %}active{% endblock %}
 {% block content %}
 <div class="text-dark">
     <form method="POST" action="{% url 'vision:index' %}" class="form"  id="form-vision" enctype="multipart/form-data">
