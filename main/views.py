@@ -168,9 +168,3 @@ def send_message_inquiry(user, user_email, user_name, is_urgent,message_body , c
         context_response["message"]["status_error_save"] = "Something went wrong!"
         print("An error occurred:", str(e))
     return context_response
-
-def error_404_view(request, exception):
-   
-    # we add the path to the 404.html file
-    # here. The name of our HTML file is 404.html
-    return render(request, 'main/404.html')

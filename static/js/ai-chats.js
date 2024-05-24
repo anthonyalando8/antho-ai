@@ -37,7 +37,7 @@ $(document).ready(function(){
                         var image_html = ""
                         
                         if(image != null && image != ""){
-                            image_html = converter.makeHtml(`<div markdown="1" style="max-width: 500px; max-height: 500px" class="m-2 overflow-hidden">![Message Image](${image})</div>`)
+                            image_html = converter.makeHtml(`<div markdown="1" style="max-width: 500px; max-height: 500px" class="m-2 overflow-hidden">![Image](${image})</div>`)
                         }
                         // Convert Markdown to HTML
                         var response_to_html = converter.makeHtml(response)

@@ -12,6 +12,7 @@ app_name = "auth0"
 
 urlpatterns =[
     path('register/', view_auth.register, name="register"),
+    path('', view_auth.login_view, name="auth"),
     path('login/', view_auth.login_view, name="login"),
     path('logout/', logout_view, name="logout")
 ]
