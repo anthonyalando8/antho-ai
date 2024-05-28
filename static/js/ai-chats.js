@@ -1,15 +1,54 @@
 
 $(document).ready(function(){
+    var prompts_loader = document.getElementById("prompts-loader");
     var converter = new showdown.Converter();
 
     var user_avatar = "https://ik.imagekit.io/anthonyalando/Soft_Connect/user.png?updatedAt=1682239876486"
     var softchat_avatar = "https://ik.imagekit.io/anthonyalando/Soft_Connect/cpu.png?updatedAt=1715174298728"
     var converted_to_html_user_avatar_name = converter.makeHtml(`<div markdown="1" class="d-flex m-2 align-items-center flex-row my-2"><div markdown="1">![your image](${user_avatar} =32x32 "You")</div><div markdown="1" class="mx-md-3 mx-2">**You**</div></div>`)
     var converted_to_html_softchat_avatar_name = converter.makeHtml(`<div markdown="1" class="d-flex m-2 align-items-center flex-row my-2"><div markdown="1">![soft connect logo](${softchat_avatar} =32x32 "SoftChatAI")</div><div markdown="1" class="mx-md-3 mx-2"> **SoftChatAI**</div></div>`)
-               
+    
+    var spinner = `
+        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+        <span class="visually-hidden">Loading...</span>
+        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+        <span class="visually-hidden">Loading...</span>
+        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+        <span class="visually-hidden">Loading...</span>
+    `
+    var prompts = [
+        "Suggest a unique recipe for a healthy breakfast.",
+        "What's an interesting fact about space?",
+        "Give me a motivational quote to start my day.",
+        "What are the top three travel destinations in Europe?",
+        "Explain the importance of mindfulness in daily life.",
+        "Recommend a good book for a weekend read.",
+        "Share a fun fact about ancient civilizations.",
+        "How can I improve my productivity at work?",
+        "What's a creative idea for a kid's birthday party?",
+        "What are the principles of SOLID in software design?",
+        "Explain the role of Docker in containerization.",
+        "How do you handle authentication and authorization in a web app?",
+        "Provide tips for maintaining a healthy work-life balance.",
+        "Suggest a recipe for a unique and delicious dessert that would impress my friends at a dinner party?",
+        "What are some creative theme ideas for a summer garden party that will keep guests entertained?",
+        "Can you recommend some fun and unusual board games or party games that are great for large groups?",
+        "What are some exciting and easy-to-make finger foods or snacks that would be perfect for a movie night with friends?",
+        "Explain the concept of recursion in programming.",
+        "How does the map function work in Python?",
+        "What's the difference between let and var in JavaScript?",
+        "How do you implement a binary search algorithm?",
+        "Explain the Model-View-Controller (MVC) architecture.",
+        "What are some best practices for writing clean code?",
+        "Describe how to use Git for version control."
+    ]
+    var prompt_container = document.createElement("div")
+    prompt_container.classList.add('row', 'g-3', "g-lg-4");
+
     $("#ai_chat_form").submit(function(event){
         event.preventDefault();
         var formData = new FormData(this);
+        prompts_loader.innerHTML= spinner;
         $.ajax({
             type: "POST",
             url: $(this).attr('action'),
@@ -20,7 +59,27 @@ $(document).ready(function(){
                 // Check if response is empty
                 if ($.isEmptyObject(response)) {
                     console.log("Response is empty");
-                    console.log("root/static/js used")
+                    prompts_loader.innerHTML = ""
+
+                    //create a div elements
+                    for (let i = prompts.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [prompts[i], prompts[j]] = [prompts[j], prompts[i]]; // Swap elements
+                    }
+                    // Return the first 'count' elements
+                        prompts.slice(0, 4).forEach((element)=>{
+                            var element_container = document.createElement('div');
+                            element_container.classList.add("bg-dark", "text-light", "col-sm-12", "col-md-6", "col-xxl-3","p-2", "card");
+                            element_container.style.cursor = "pointer"
+                            element_container.innerHTML = element
+                            element_container.addEventListener("click", function(){
+                                $("#id_message").val(element)
+                                $('#btn-submit').click()
+                            });
+                            prompt_container.appendChild(element_container)
+                        })
+                    prompts_loader.appendChild(prompt_container)
+                    // prompts_loader.classList.add('d-block')
                     return;
                 } 
                 try {
@@ -46,6 +105,9 @@ $(document).ready(function(){
                         htmlData += (message_user_name+response_ai_name)
                         chathistory = element.fields.chatHistory
                     });
+                    prompts_loader.innerHTML = ""
+                    prompts_loader.classList.add('d-none')
+
                     $("#chat").html(htmlData)
                     hljs.highlightAll()
                     
@@ -54,48 +116,47 @@ $(document).ready(function(){
 
                 } catch (error) {
                     console.error("Error parsing JSON:", error);
+                    prompts_loader.innerHTML = ""
+                    prompts_loader.classList.add('d-none')
+
+                    createToast("Error display recent chats!", -1)
+
                 }
                
             },
             error: function(error){
                 console.log(error)
+                prompts_loader.innerHTML = ""
+                prompts_loader.classList.add('d-none')
+
+                createToast("Error retrieving history!", -1)
+
             }
         });
 
     });
     $("#btn_get_chats").click();
 
-
-    
-});
-
-$(document).ready(function(){
-    var converter = new showdown.Converter();
-
-    var user_avatar = "https://ik.imagekit.io/anthonyalando/Soft_Connect/user.png?updatedAt=1682239876486"
-    var softchat_avatar = "https://ik.imagekit.io/anthonyalando/Soft_Connect/cpu.png?updatedAt=1715174298728"
-    var converted_to_html_user_avatar_name = converter.makeHtml(`<div markdown="1" class="d-flex align-items-center flex-row mx-2 my-2"><div markdown="1">![your image](${user_avatar} =32x32 "You")</div><div markdown="1" class="mx-md-3 mx-2">**You**</div></div>`)
-    var converted_to_html_softchat_avatar_name = converter.makeHtml(`<div markdown="1" class="d-flex align-items-center flex-row mx-2 my-2"><div markdown="1">![soft connect logo](${softchat_avatar} =32x32 "SoftChatAI")</div><div markdown="1" class="mx-md-3 mx-2"> **SoftChatAI**</div></div>`)
-       
+    //Submit prompt logics
     const form = document.getElementById('form');
 
     // Add an event listener to the form submission
     form.addEventListener('submit', async function(event) {
         // Prevent the default form submission
         $('#btn-submit').addClass('disabled');
-
         event.preventDefault();
         var submitButton = $('#form button[type="submit"]');
+        $("#prompts-loader").html("")
 
         submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
         submitButton.attr("disabled","disabled");
         // Create a FormData object and populate it with form data
-        const formData = new FormData(form);
+        const dataForm = new FormData(form);
         $('#form')[0].reset();
         // Send a POST request using the Fetch API
         fetch(form.getAttribute("action"), {
             method: 'POST',
-            body: formData
+            body: dataForm
         })
         .then(response => {
             // Check if the response is a streaming response
@@ -123,6 +184,8 @@ $(document).ready(function(){
                                 console.log(text)
                                 try {
                                     // Parse the string as JSON
+                                    prompts_loader.classList.add('d-none')
+
                                     const jsonData = JSON.parse(text);
                                     if("is_first" in jsonData && jsonData.is_first){
                                         $("#chat").append(converted_to_html_user_avatar_name+`<div class="m-2">${jsonData.prompt}</div>`)
@@ -158,6 +221,7 @@ $(document).ready(function(){
                                     // Process the JSON data (e.g., append to a DOM element)
                                 } catch (error) {
                                     console.error('Error parsing JSON:', error);
+                                    createToast("Error occurred. It is us!", -1)
                                     hljs.highlightAll()
                                     controller.error(error);
                                 }
@@ -165,6 +229,7 @@ $(document).ready(function(){
                                 read();
                             }).catch(error => {
                                 console.error('Error reading response:', error);
+                                createToast("Error reading response!", -1)
                                 controller.error(error);
                             });
                         }
@@ -194,7 +259,22 @@ $(document).ready(function(){
 
     });
 
+    // //create a div elements
+    // prompts.forEach((element)=>{
+    //     var element_container = document.createElement('div');
+    //     element_container.classList.add("bg-secondary", "text-white", "col-sm-12", "col-md-6", "col-xxl-3");
+    //     element_container.style.cursor = "pointer"
+    //     element_container.innerHTML = element
+    //     element_container.addEventListener("click", function(){
+    //         $("#id_message").val(element)
+    //         $('#btn-submit').click()
+    //     });
+    //     prompts_loader.appendChild(element_container)
+    // })
+    
 });
+
+
 
 
 $('#id_message').on('input', function() {

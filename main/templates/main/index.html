@@ -141,7 +141,6 @@
                     });
                 </script>
                 {% endif %}
-                <div class="position-absolute top-0 start-50 translate-middle-x"  id="message_response"></div>
                 <div class="form-floating mb-3">
                     <input type="email" class="form-control" id="floatingInput" name="user_email" {% if user.is_authenticated %} value="{{ user.email }}" {% endif %} placeholder="name@example.com" required>
                     <label for="floatingInput">Email address</label>
@@ -166,57 +165,50 @@
             </form>
         </div>
         <script>
-            $('#form-message').submit(function(event){
-                event.preventDefault();
+            $(document).ready(function(){
+                $('#form-message').submit(function(event){
+                    event.preventDefault();
 
-                var formData = new FormData(this);
-                var send_message_button = $('#form-message button[type="submit"]')
-                send_message_button.attr("disabled","disabled")
+                    var formData = new FormData(this);
+                    var send_message_button = $('#form-message button[type="submit"]')
+                    send_message_button.attr("disabled","disabled")
 
-                send_message_button.html(`<i class="fa-solid fa-spinner fa-spin-pulse"></i>`)
-                $.ajax({
-                    type: 'POST',
-                    url: $(this).attr('action'),
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response){
-                        send_message_button.removeAttr("disabled","disabled");
-                        send_message_button.html('Submit');
-                        
-                        var status = response.status;
-                        var messages = response.message;
-                        var status_message = "";
-                        $.each(messages, function(key, value) {
-                            status_message += `<span>${value}</span></br>`;
-                        });
-                    
+                    send_message_button.html(`<i class="fa-solid fa-spinner fa-spin-pulse"></i>`)
+                    $.ajax({
+                        type: 'POST',
+                        url: $(this).attr('action'),
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function(response){
+                            send_message_button.removeAttr("disabled","disabled");
+                            send_message_button.html('Submit');
+                            
+                            var status = response.status;
+                            var messages = response.message;
+                            var status_message = "";
+                            $.each(messages, function(key, value) {
+                                //status_message += `<span>${value}</span></br>`;
+                                status_message += value
+                            });
 
-                        var response_alert = document.createElement('div');
-                        response_alert.classList.add("alert");
-                        response_alert.classList.add(status == "ok" ? "alert-success" : "alert-danger");
-                        response_alert.setAttribute("role","alert");
-                        $(response_alert).html(status_message);
-                        
-                        $("#message_response").html(response_alert);
+                            createToast(status_message, status == "ok" ? 200 : -1)
 
-                        setTimeout(function(){
-                            $("#message_response").html("");
-                        }, 5000)
-                        $('#form-message')[0].reset();
-                        $('#message_response').scrollTop($('#message_response')[0].scrollHeight);
+                            $('#form-message')[0].reset();
 
-                        
-                    },
-                    error: function(error){
-                        send_message_button.removeAttr("disabled","disabled")
-                        send_message_button.html('Submit')
-                        console.log(error);
-                        $('#form-message')[0].reset();
+                            
+                        },
+                        error: function(error){
+                            send_message_button.removeAttr("disabled","disabled")
+                            send_message_button.html('Submit')
+                            console.log(error);
+                            $('#form-message')[0].reset();
 
-                    }
+                        }
+                    })
                 })
-            })
+            });
+            
         </script>
         
     </div>
