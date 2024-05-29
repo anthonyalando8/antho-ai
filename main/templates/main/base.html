@@ -51,6 +51,7 @@
     
 </head>
 <body class="p-0 m-0" id="body">
+    {% csrf_token %}
     <header class="d-none"><h1>{% block header %} Homepage {% endblock %}</h1></header>
     <nav class="navbar navbar-expand-lg  bg-dark navbar-dark  sticky-top " id="nav">
         <div class="container-fluid">

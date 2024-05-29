@@ -25,7 +25,43 @@ $(document).ready(function(){
             message_view.appendChild(message_element_value);
 
         })
-        form_container.appendChild(message_view)
+        var reply_form = document.createElement("form");
+        reply_form.classList.add("form");
+        var csrf_token_field = document.createElement("input")
+        csrf_token_field.setAttribute("type", "hidden");
+        csrf_token_field.setAttribute("name", "csrfmiddlewaretoken")
+        var csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+        csrf_token_field.setAttribute("value", csrf_token)
+        
+        var form_floating = document.createElement("div");
+        var hidden_send_reply = document.createElement("input");
+        hidden_send_reply.setAttribute("name","send_reply")
+        hidden_send_reply.setAttribute("value", "true");
+        hidden_send_reply.setAttribute("type", "hidden");
+        hidden_send_reply.setAttribute("id", "send_reply");
+        form_floating.classList.add("form-floating", "mt-2");
+        var text_area = document.createElement("textarea");
+        text_area.classList.add("form-control");
+        text_area.style.height = "150px";
+        text_area.setAttribute("id", "text_area_reply");
+        text_area.setAttribute("name", "text_area_reply")
+        var text_area_label = document.createElement("label");
+        text_area_label.setAttribute("for", "text_area_reply");
+        text_area_label.innerText = "Enter Message";
+        var btn_submit_reply = document.createElement("button");
+        btn_submit_reply.setAttribute("type", "submit");
+        btn_submit_reply.setAttribute("id","btn_submit_reply");
+        btn_submit_reply.classList.add("btn", "btn-success", "mt-2");
+        btn_submit_reply.innerText = "Send Reply";
+
+        form_floating.appendChild(text_area);
+        form_floating.appendChild(text_area_label);
+        reply_form.appendChild(csrf_token_field);
+        reply_form.appendChild(hidden_send_reply);
+        reply_form.appendChild(form_floating);
+        reply_form.appendChild(btn_submit_reply);
+        form_container.appendChild(message_view);
+        form_container.appendChild(reply_form);
         return form_container
     }
     function showModal(message_obj){
