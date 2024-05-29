@@ -1,8 +1,93 @@
-function showModal(message_obj){
-    $('table-messages').append(`{% block modaltitle %} Subject {% endblock %}{% modalbody %}Message{% endblock %}`)
-    $('#modal-view-message').modal('show')
-}
+
 $(document).ready(function(){
+    function createModalForm(message_obj){
+        var form_container = document.createElement("div");
+        var message_view = document.createElement("div");
+        message_view.classList.add("row", "g-2")
+        form_container.classList.add("p-2","border", "border-light", "rounded");
+        [
+            { key: "Reference Code: ", value: message_obj.fields.message_reference_code },
+            { key: "Email: ", value: message_obj.fields.email },
+            { key: "Subject: ", value: message_obj.fields.message_subject },
+            { key: "Date: ", value: message_obj.fields.date },
+            { key: "Phone: ", value: message_obj.fields.phone },
+            { key: "Answered: ", value: message_obj.fields.is_responded },
+            { key: "Marked urgent: ", value: message_obj.fields.is_urgent},
+            { key: "Message: ", value: message_obj.fields.message_body}
+        ].forEach(attr =>{
+            var message_element_label = document.createElement("div");
+            message_element_label.classList.add("col-12","col-md-4", "col-xxl-3", "p-1", "text-break", "fw-bold")
+            message_element_label.innerText = attr.key;
+            var message_element_value = document.createElement("div");
+            message_element_value.classList.add("col-12","col-md-8", "col-xxl-9", "p-1", "border", "border-light", "rounded", "text-break")
+            message_element_value.innerText = attr.value;
+            message_view.appendChild(message_element_label);
+            message_view.appendChild(message_element_value);
+
+        })
+        form_container.appendChild(message_view)
+        return form_container
+    }
+    function showModal(message_obj){
+        //$('#modal-view-message').modal('show')
+        var modal = document.createElement("div");
+
+        modal.classList.add("modal", "fade");
+        const createAndSetAttributes = (element, attributes) => {
+            attributes.forEach(attr => {
+                element.setAttribute(attr.key, attr.value);
+            });
+        };
+        createAndSetAttributes(modal, [
+            { key: "id", value: "modal-view-message" },
+            { key: "data-bs-backdrop", value: "static" },
+            { key: "data-bs-keyboard", value: "true" },
+            { key: "tabindex", value: "-1" },
+            { key: "aria-labelledby", value: "modal-uploaded-view-message-label" },
+            { key: "aria-hidden", value: "true" }
+        ]);
+    
+        var modal_dialog = document.createElement("div");
+        modal_dialog.classList.add("modal-dialog", "modal-xl","modal-dialog-centered", "modal-dialog-scrollable")
+    
+        var modal_content = document.createElement("div")
+        modal_content.classList.add("modal-content")
+        var modal_header = document.createElement("div")
+        modal_header.classList.add("modal-header")
+        var modal_title = document.createElement("div");
+        modal_title.classList.add("modal-title", "h1", "fs-5");
+        modal_title.innerHTML = `From: <span>${message_obj.fields.user_name}</span>` 
+        var modal_close_btn = document.createElement("button");
+        modal_close_btn.classList.add("btn-close");
+        createAndSetAttributes(modal_close_btn, [
+            { key: "type", value: "button" },
+            { key: "data-bs-dismiss", value: "modal" },
+            { key: "aria-label", value: "Close" }
+        ]);
+        modal_close_btn.addEventListener('click', function(){
+            modal.remove()
+        })
+        var modal_body = document.createElement("div");
+        modal_body.classList.add("modal-body")
+        modal_body.appendChild(createModalForm(message_obj))
+        var modal_footer = document.createElement("div")
+        modal_footer.classList.add("modal-footer")
+        
+        
+        modal_header.appendChild(modal_title)
+        modal_header.appendChild(modal_close_btn)
+        modal_content.appendChild(modal_header)
+        modal_content.appendChild(modal_body)
+        modal_content.appendChild(modal_footer)
+        modal_dialog.appendChild(modal_content)
+        modal.appendChild(modal_dialog)
+        document.body.appendChild(modal)
+
+        $('#modal-view-message').modal('show')
+
+    }
+
+
     $('#form-get-messages').submit(function(event){
         event.preventDefault();
 

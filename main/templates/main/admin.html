@@ -46,6 +46,12 @@
               Home
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin">
+              <span><i class="fa-solid fa-user-tie"></i></span>
+              Admin
+            </a>
+          </li>
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="{% url 'main:admin_dashboard' %}">
             <span><i class="fa-solid fa-gauge"></i></span>
@@ -137,7 +143,7 @@
 </div>
 {% endblock %}
 {% block modal %}
-<div class="modal fade" id="modal-view-message"  data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modal-uploaded-view-message-label" aria-hidden="true">
+<!-- <div class="modal fade" id="modal-view-message"  data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modal-uploaded-view-message-label" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
           <div class="modal-header">
@@ -155,5 +161,5 @@
           </div>
         </div>
     </div>
-</div>
+</div> -->
 {% endblock %}
