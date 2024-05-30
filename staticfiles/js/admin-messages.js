@@ -1,6 +1,44 @@
 
 $(document).ready(function(){
-    function createModalForm(message_obj){
+    //Sending reply to server
+    function submit_reply(form, modal_close_btn){
+        form.addEventListener("submit", async function(event){
+            event.preventDefault()
+            var formData = new FormData(form)
+            var submitButton = $(form).find('button[type="submit"]');
+
+                // Now you can do something with the submit button, for example, disable it
+            submitButton.prop('disabled', true);
+            submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span');
+            fetch(form.getAttribute("action"),{
+                method: "POST",
+                body: formData
+            }).then(response =>{
+                return response.json()             
+            }).then(data =>{
+                var status_code = data.status_code;
+                var messages = data.message;
+                var status_message = "";
+                $.each(messages, function(key, value) {
+                    status_message += value
+                });
+                submitButton.prop('disabled', false);
+                submitButton.html('Send Reply');
+                modal_close_btn.click()
+                createToast(status_message, status_code == "ok" ? 200 : -1)
+                $("#btn-get-messages").click()                
+            })
+            .catch(error =>{
+                console.log(error)
+                createToast("Not sent. Try again Later!", -1)
+                submitButton.prop('disabled', false);
+                submitButton.html('Send Reply');
+            })
+        });
+    }
+
+
+    function createModalForm(message_obj, modal_close_btn){
         var form_container = document.createElement("div");
         var message_view = document.createElement("div");
         message_view.classList.add("row", "g-2")
@@ -27,6 +65,8 @@ $(document).ready(function(){
         })
         var reply_form = document.createElement("form");
         reply_form.classList.add("form");
+        reply_form.setAttribute("method", "post")
+        reply_form.setAttribute("action", "/manage/admin/messages")
         var csrf_token_field = document.createElement("input")
         csrf_token_field.setAttribute("type", "hidden");
         csrf_token_field.setAttribute("name", "csrfmiddlewaretoken")
@@ -39,25 +79,33 @@ $(document).ready(function(){
         hidden_send_reply.setAttribute("value", "true");
         hidden_send_reply.setAttribute("type", "hidden");
         hidden_send_reply.setAttribute("id", "send_reply");
+        var hidden_message_code = document.createElement("input");
+        hidden_message_code.setAttribute("name","message_reference_code")
+        hidden_message_code.setAttribute("value", message_obj.fields.message_reference_code);
+        hidden_message_code.setAttribute("type", "hidden");
+        hidden_message_code.setAttribute("id", "message_reference_code");
         form_floating.classList.add("form-floating", "mt-2");
         var text_area = document.createElement("textarea");
         text_area.classList.add("form-control");
         text_area.style.height = "150px";
-        text_area.setAttribute("id", "text_area_reply");
-        text_area.setAttribute("name", "text_area_reply")
+        text_area.setAttribute("id", "message_reply");
+        text_area.setAttribute("name", "message_reply")
         var text_area_label = document.createElement("label");
-        text_area_label.setAttribute("for", "text_area_reply");
+        text_area_label.setAttribute("for", "message_reply");
         text_area_label.innerText = "Enter Message";
         var btn_submit_reply = document.createElement("button");
         btn_submit_reply.setAttribute("type", "submit");
         btn_submit_reply.setAttribute("id","btn_submit_reply");
         btn_submit_reply.classList.add("btn", "btn-success", "mt-2");
         btn_submit_reply.innerText = "Send Reply";
+        
+        submit_reply(reply_form, modal_close_btn);
 
         form_floating.appendChild(text_area);
         form_floating.appendChild(text_area_label);
         reply_form.appendChild(csrf_token_field);
         reply_form.appendChild(hidden_send_reply);
+        reply_form.append(hidden_message_code);
         reply_form.appendChild(form_floating);
         reply_form.appendChild(btn_submit_reply);
         form_container.appendChild(message_view);
@@ -105,7 +153,7 @@ $(document).ready(function(){
         })
         var modal_body = document.createElement("div");
         modal_body.classList.add("modal-body")
-        modal_body.appendChild(createModalForm(message_obj))
+        modal_body.appendChild(createModalForm(message_obj, modal_close_btn))
         var modal_footer = document.createElement("div")
         modal_footer.classList.add("modal-footer")
         

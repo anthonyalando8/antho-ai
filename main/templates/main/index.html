@@ -181,10 +181,11 @@
                         processData: false,
                         contentType: false,
                         success: function(response){
+                            console.log(response)
                             send_message_button.removeAttr("disabled","disabled");
                             send_message_button.html('Submit');
                             
-                            var status = response.status;
+                            var status_code = response.status_code;
                             var messages = response.message;
                             var status_message = "";
                             $.each(messages, function(key, value) {
@@ -192,7 +193,7 @@
                                 status_message += value
                             });
 
-                            createToast(status_message, status == "ok" ? 200 : -1)
+                            createToast(status_message, status_code == "ok" ? 200 : -1)
 
                             $('#form-message')[0].reset();
 

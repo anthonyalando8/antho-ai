@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse,JsonResponse
 import africastalking
-from .models import InquiryMessage
+from .models import InquiryMessage, InquiryResponse
 from datetime import datetime, timedelta
 from main . generate_random_hashed_string import Generator
 from django.contrib.auth.models import User
@@ -23,19 +23,19 @@ def index(request):
                 is_urgent = True if urgent else False
 
                 context_response ={
-                    'status': 'ok', 
+                    'status_code': 'ok', 
                     'message': {'status_ok':'Message sent successfully!'}
                 }
 
                 if len(message_body) > 300:
-                    context_response['status'] = 'error'
+                    context_response['status_code'] = 'error'
                     context_response["message"].pop("status_ok")
                     context_response["message"] = {'status_error_message_body': "Message too long!"}
                     form_is_valid = False
                 if len(user_name) > 50:
                     context_response["message"].pop("status_ok")
-                    if context_response["status"] != 'error':
-                        context_response["status"] = 'error'
+                    if context_response['status_code'] != 'error':
+                        context_response['status_code'] = 'error'
                     context_response["message"]["status_error_user_name"] = "username too long"
                     form_is_valid = False
 
@@ -43,10 +43,13 @@ def index(request):
                     context_response = send_message_inquiry(request.user,user_email,user_name, is_urgent, message_body, context_response)
 
                 return JsonResponse(context_response)
+            
         return render(request, "main/index.html", {'user':user})
     except Exception as e:
         print(e)
         return HttpResponse(str("Something went wrong!!!..."))
+    
+
 
 def admin_dashboard(request):
     user = request.user
@@ -91,6 +94,13 @@ def admin_get_messages(request):
                     inquiries = InquiryMessage.objects.filter(is_responded=False)
 
                     return JsonResponse(serialize('json', inquiries), safe=False)
+                elif request.POST.get("send_reply"):
+                    context_response ={
+                        'status_code': 'ok', 
+                        'message': {'status_ok':'Reply sent successfully!'}
+                    }
+                    context_response = send_reply(request, context_response)
+                    return JsonResponse(context_response)
         else:
             return HttpResponse(not_authorized())
     else:
@@ -160,11 +170,40 @@ def send_message_inquiry(user, user_email, user_name, is_urgent,message_body , c
         )
         inquiry.save()
         user.inquiry_message.add(inquiry)
-        context_response["status"] = 'ok'
+        context_response['status_code'] = 'ok'
         context_response["message"]["status_ok"] = "Message sent successfully!"
     except Exception as e:
         context_response["message"].pop("status_ok")
-        context_response["status"] = 'error'
+        context_response['status_code'] = 'error'
         context_response["message"]["status_error_save"] = "Something went wrong!"
         print("An error occurred:", str(e))
     return context_response
+
+def send_reply(request, context_response):
+    message_reference_code = request.POST.get("message_reference_code")
+    message_reply = request.POST.get("message_reply")
+    try:
+        message = InquiryMessage.objects.get(message_reference_code=message_reference_code)
+        reply_inquiry(request.user, message, message_reply)
+
+    except Exception as e:
+        context_response["message"].pop("status_ok")
+        context_response['status_code'] = 'error'
+        context_response["message"]["status_error_save"] = "Something went wrong!"
+    return context_response
+
+def reply_inquiry(user, message, message_response):
+    date = datetime.now()
+    response_reference_code = Generator(user.email)
+    
+    inquiry_reply = InquiryResponse(
+        user=user,
+        message=message,
+        response_reference_code=response_reference_code,
+        message_response=message_response,
+        date=date
+    )
+    inquiry_reply.save()
+    message.is_responded = True
+    message.save()
+    message.inquiry_response.add(inquiry_reply)
