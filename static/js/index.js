@@ -68,17 +68,23 @@ $(document).ready(function(){
                 }
 
                 if (is_admin){
-                    if (data.admin_notifications != null){
-                        if(data.hasOwnProperty("admin_notifications")){
-                            var admin_notifications = data.admin_notifications
-                            
-                            var all_unread_messages = admin_notifications["all_new_messages"]
-                            var json_all_new_messages = JSON.parse(all_unread_messages)
-                            json_all_new_messages.forEach(element => {
-                                console.log(element)
-                            });
-                            console.log("Is admin and has notifications")
+                    if(data.hasOwnProperty("admin_notifications")){
+                        var admin_notifications = data.admin_notifications
+                        
+                        var all_unread_messages = admin_notifications["all_new_messages"]
+                        var json_all_new_messages = JSON.parse(all_unread_messages)
+                        var total_new_messages = json_all_new_messages.length;
+                        console.log(total_new_messages)
+                        if(total_new_messages > 0){
+                            $("#badge-message-count").removeClass("d-none")
+                            $("#badge-message-count").text(total_new_messages > 99 ? "99+": total_new_messages)
+                        }else{
+                            $("#badge-message-count").addClass("d-none")
                         }
+                        // json_all_new_messages.forEach(element => {
+                        //     console.log(element)
+                        // });
+                        console.log("Is admin and has notifications")
                     }
                 }
                 

@@ -31,72 +31,63 @@
 {% endblock %}
 <div class="container-fluid">
     <style>
-        .nav-list .nav-link{
+        .nav-pills .nav-link{
             font-weight: 500;
             color: #333;
         }
     </style>
 <div class="row">
   <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-    <div class="position-sticky pt-3">
-      <ul class="nav nav-list flex-column">
+    <div class="position-fixed bg-light pt-3">
+      <ul class="nav nav-pills flex-column mb-auto">
         <li class="nav-item">
-            <a class="nav-link" href="{% url 'main:homepage' %}">
+            <a class="nav-link link-dark" href="{% url 'main:homepage' %}">
               <span><i class="fa-solid fa-house"></i></span>
               Home
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/admin">
+            <a class="nav-link link-dark" href="/admin">
               <span><i class="fa-solid fa-user-tie"></i></span>
               Admin
             </a>
           </li>
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="{% url 'main:admin_dashboard' %}">
+        <li class="nav-item link-dark">
+          <a class="nav-link" aria-current="page" href="{% url 'main:admin_dashboard' %}">
             <span><i class="fa-solid fa-gauge"></i></span>
             Dashboard
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">
+          <a class="nav-link link-dark" href="#">
             <span><i class="fa-solid fa-users"></i></span>
             Staffs
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'main:admin_messages' %}">
+        <li class="nav-item ">
+          <a class="nav-link  bg-primary link-dark position-relative" href="{% url 'main:admin_messages' %}">
             <span><i class="fa-solid fa-message"></i></span>
             Messages
-            {% if messages.count > 0 %}
-            <span class="badge rounded-pill bg-danger mx-2 mx-md-4" id="badge-message-count">
-                <small >
-                    <!-- {% if messages.count < 100 %}
-                    {{messages.count}}
-                    {% else %}
-                    99+
-                    {% endif %} -->
-                    {% block msg-number %}
-                    {% endblock %}
-                </small>
+            
+            <span class="d-none position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger " id="badge-message-count">
             </span>
-            {% endif %}
+            
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">
+          <a class="nav-link link-dark" href="#">
             <span><i class="fa-solid fa-chart-simple"></i></span>
             Trends
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">
+          <a class="nav-link link-dark" href="#">
             <span><i class="fa-solid fa-chart-area"></i></span>
             Reports
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">
+          <a class="nav-link link-dark" href="#">
             <span><i class="fa-solid fa-layer-group"></i></span>
             Integrations
           </a>
@@ -111,13 +102,13 @@
       </h6>
       <ul class="nav nav-list flex-column mb-2">
         <li class="nav-item">
-          <a class="nav-link" href="#">
+          <a class="nav-link link-dark" href="#">
             <span><i class="fa-solid fa-money-check-dollar"></i></span>
             Profits
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">
+          <a class="nav-link link-dark" href="#">
             <span><i class="fa-solid fa-scale-balanced"></i></span>
             Year-end sale
           </a>

@@ -2,33 +2,35 @@
 
 {% block class_active_vision %}active{% endblock %}
 {% block content %}
-<div class="text-dark">
-    <form method="POST" action="{% url 'vision:index' %}" class="form"  id="form-vision" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="file" name="image-uploaded" accept="image/*">
-        <button class="btn btn-outline-success" type="submit" name="btn_submit" id="btn_submit">Submit</button>
-    </form>
-</div>
-<script>
-    $(document).ready(function(){
-        $("#form-vision").submit(function(event){
-            event.preventDefault();
-            var formData = new FormData(this);
+<div class="h-100 w-100">
+    <div class="text-dark">
+        <form method="POST" action="{% url 'vision:index' %}" class="form"  id="form-vision" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="image-uploaded" accept="image/*">
+            <button class="btn btn-outline-success" type="submit" name="btn_submit" id="btn_submit">Submit</button>
+        </form>
+    </div>
+    <script>
+        $(document).ready(function(){
+            $("#form-vision").submit(function(event){
+                event.preventDefault();
+                var formData = new FormData(this);
 
-            $.ajax({
-                type: "POST",
-                url: $(this).attr("action"),
-                contentType: false,
-                data: formData,
-                processData: false,
-                success: function(response){
-                    console.log(response)
-                },
-                error: function(error){
-                    console.error("Response error: "+error)
-                }
-            })
+                $.ajax({
+                    type: "POST",
+                    url: $(this).attr("action"),
+                    contentType: false,
+                    data: formData,
+                    processData: false,
+                    success: function(response){
+                        console.log(response)
+                    },
+                    error: function(error){
+                        console.error("Response error: "+error)
+                    }
+                })
+            });
         });
-    });
-</script>
+    </script>
+</div>
 {% endblock %}
