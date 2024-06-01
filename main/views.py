@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from main . generate_random_hashed_string import Generator
 from django.contrib.auth.models import User
 from django.core.serializers import serialize
+import json
 # Create your views here.
 def index(request):
     try:
@@ -43,7 +44,20 @@ def index(request):
                     context_response = send_message_inquiry(request.user,user_email,user_name, is_urgent, message_body, context_response)
 
                 return JsonResponse(context_response)
-            
+            if request.POST.get("gmc"):
+                if request.user.is_authenticated:
+                    context_response = {
+                        "status_response":{
+                            "status_code":"ok",
+                            "status_text": "Messages loaded!"
+                        },
+                        "messages": [],
+                        "unread_response_count": 0
+                    }
+                    context_response = get_user_messages_notifiction(request, context_response)
+                else:
+                    context_response = {}
+                return JsonResponse(context_response)
         return render(request, "main/index.html", {'user':user})
     except Exception as e:
         print(e)
@@ -201,9 +215,44 @@ def reply_inquiry(user, message, message_response):
         message=message,
         response_reference_code=response_reference_code,
         message_response=message_response,
-        date=date
+        date=date, 
+        read = False
     )
     inquiry_reply.save()
     message.is_responded = True
     message.save()
     message.inquiry_response.add(inquiry_reply)
+
+def get_user_messages_notifiction(request, context_response):
+    unread_response_count = 0
+    try:
+        answered_messages = InquiryMessage.objects.filter(user=request.user)
+        for message in answered_messages.all():
+            message_response = None
+            if message.is_responded:
+                message_response = InquiryResponse.objects.get(message=message)
+                if not message_response.read:
+                    unread_response_count += 1
+            #map a message to its response
+            message_data = message.__dict__
+            response_data = message_response.__dict__ if message_response else None
+            # Remove unnecessary fields (e.g., private fields starting with "_")
+            message_data = {k: v for k, v in message_data.items() if not k.startswith('_')}
+            response_data = {k: v for k, v in response_data.items() if not k.startswith('_')} if response_data else None
+            message_response_map = {
+                "message": message_data,
+                "response": response_data
+            }
+            
+            context_response["messages"].append(message_response_map)
+        context_response["unread_response_count"] = unread_response_count
+    
+    except Exception as e:
+        print(e)
+        context_response.clear()
+        context_response["status_response"] = {
+            "status_code":"error",
+            "status_text": "Unable to load messages! {}".format(str(e))
+        }
+        
+    return context_response

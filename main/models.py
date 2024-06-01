@@ -22,6 +22,7 @@ class InquiryResponse(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="inquiry_responded", null=True)
     response_reference_code = models.CharField(max_length=100)
     message_response = models.TextField(null=True, blank=True)
+    read = models.BooleanField(null=True, blank=True, default=False)
     date = models.DateTimeField()
 
     def __str__(self) -> str:
