@@ -74,7 +74,6 @@ $(document).ready(function(){
                             
                             var all_unread_messages = admin_notifications["all_new_messages"]
                             var json_all_new_messages = JSON.parse(all_unread_messages)
-                            console.log(json_all_new_messages)
                             json_all_new_messages.forEach(element => {
                                 console.log(element)
                             });
