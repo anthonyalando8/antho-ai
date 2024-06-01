@@ -45,8 +45,12 @@ $(document).ready(function(){
             let response_code = data.status_response.status_code
             let response_message = data.status_response.status_text
             if(response_code == "ok"){
-                let unread_responses = data.unread_response_count;
+                console.log(data)
+                let unread_responses = data.unread_notifications;
                 let messages = data.messages;
+
+                let is_admin = data.is_admin;
+
                 if(unread_responses > 0){
                     $("#fa-bell-notification").addClass("fa-shake");
                     $("#btn-bell-notification").addClass("text-danger")
@@ -62,12 +66,26 @@ $(document).ready(function(){
                 }else{
                     console.log("user has no messages")
                 }
+
+                if (is_admin){
+                    if (data.admin_notifications != null){
+                        if(data.hasOwnProperty("admin_notifications")){
+                            var admin_notifications = data.admin_notifications
+                            
+                            var all_unread_messages = admin_notifications["all_new_messages"]
+                            var json_all_new_messages = JSON.parse(all_unread_messages)
+                            json_all_new_messages.forEach(element => {
+                                console.log(element)
+                            });
+                            console.log("Is admin and has notifications")
+                        }
+                    }
+                }
                 
             }else{
                 console.log("Error received")
                 $("#btn-bell-notification").addClass("text-light")
             }
-            console.log()
             
         })
         .catch(error => {

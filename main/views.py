@@ -47,12 +47,13 @@ def index(request):
             if request.POST.get("gmc"):
                 if request.user.is_authenticated:
                     context_response = {
+                        "is_admin": False,
                         "status_response":{
                             "status_code":"ok",
                             "status_text": "Messages loaded!"
                         },
                         "messages": [],
-                        "unread_response_count": 0
+                        "unread_notifications": 0
                     }
                     context_response = get_user_messages_notifiction(request, context_response)
                 else:
@@ -91,10 +92,38 @@ def admin_dashboard(request):
                         # Store the count in the dictionary
                         user_counts_per_day[day.strftime('%Y-%m-%d')] = user_count
                     return JsonResponse(user_counts_per_day)
+                
+                # if request.POST.get("gan"):#gan => get admin notifications
+                #     context_response = {
+                #         "status_response":{
+                #             "status_code": "ok",
+                #             "status_text": "Admin notification retrived!"
+                #         },
+                #         "notification_count": 0,
+                #         "notifications": []
+                #     }
+                #     try:
+                #         unread_messages = InquiryMessage.objects.filter(is_responded=False)
+                #         message_count = unread_messages.count()
+                #         context_response["notification_count"] = message_count
+                #         notification_type = {
+                #             "type": "messages",
+                #             "messages": serialize("json",unread_messages)
+                #         }
+                #         context_response["notifications"].append(notification_type)
+                #     except Exception as e:
+                #         print("Error: ", e )
+                #         context_response.clear()
+                #         context_response["status_response"] = {
+                #             "status_code":"error",
+                #             "status_text": "Something went wrong! {}".format(str(e))
+                #         }
+                #     return JsonResponse(context_response)
         
         return HttpResponse(not_authorized())
     else:
         return redirect("auth0:login")
+
 
 def admin_get_messages(request):
     user = request.user
@@ -224,7 +253,7 @@ def reply_inquiry(user, message, message_response):
     message.inquiry_response.add(inquiry_reply)
 
 def get_user_messages_notifiction(request, context_response):
-    unread_response_count = 0
+    unread_notifications = 0
     try:
         answered_messages = InquiryMessage.objects.filter(user=request.user)
         for message in answered_messages.all():
@@ -232,7 +261,7 @@ def get_user_messages_notifiction(request, context_response):
             if message.is_responded:
                 message_response = InquiryResponse.objects.get(message=message)
                 if not message_response.read:
-                    unread_response_count += 1
+                    unread_notifications += 1
             #map a message to its response
             message_data = message.__dict__
             response_data = message_response.__dict__ if message_response else None
@@ -245,7 +274,23 @@ def get_user_messages_notifiction(request, context_response):
             }
             
             context_response["messages"].append(message_response_map)
-        context_response["unread_response_count"] = unread_response_count
+        #check if user is admin and append admin specific notifications, messages directed to admin and all unread messages
+        for group in request.user.groups.all():
+            if group.name == "Admin":
+                context_response["is_admin"] = True
+                all_unread_messages = InquiryMessage.objects.filter(is_responded=False).exclude(user=request.user)
+                unread_notifications += all_unread_messages.count()
+                if all_unread_messages.count() > 0:
+
+                    notification_type = {
+                        "all_new_messages": serialize("json", all_unread_messages)
+                    }
+
+                    context_response["admin_notifications"] = notification_type
+
+                break
+        context_response["unread_notifications"] = unread_notifications
+
     
     except Exception as e:
         print(e)
