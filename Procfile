@@ -1,1 +1,1 @@
-web: daphne MamaPesa.asgi:application
+web: gunicorn MamaPesa.wsqi
