@@ -143,123 +143,128 @@ $(document).ready(function(){
     let session_id = $("#user_session_id").val();
     var submitButton = $('#form button[type="submit"]');
 
-    var chat_socket = new WebSocket(
-        'ws://'
-            + window.location.host
-            + '/ws/chat/'
-            + session_id
-            + '/'
-    )
-
-    const form = document.getElementById('form');
-
-    chat_socket.onopen = function(e){
-        //connected
-    }
-    chat_socket.onmessage = function(e){
-        console.log("Chat response recieved: ",e.data)
-        try {
-            // Parse the string as JSON
-            prompts_loader.classList.add('d-none')
-
-            const jsonData = JSON.parse(e.data);
-            if("is_first" in jsonData && jsonData.is_first){
-                $("#chat").append(converted_to_html_user_avatar_name+`<div class="m-2">${jsonData.prompt}</div>`)
-
-                if(jsonData.image != null){
-                    var image_tag = document.createElement("img");
-                    image_tag.classList.add("img-fluid");
-                    image_tag.style.maxHeight = "400px";
-                    image_tag.setAttribute('src', jsonData.image)
+    try{
+        var chat_socket = new WebSocket(
+            'ws://'
+                + window.location.host
+                + '/ws/chat/'
+                + session_id
+                + '/'
+        )
+    
+        const form = document.getElementById('form');
+    
+        chat_socket.onopen = function(e){
+            //connected
+        }
+        chat_socket.onmessage = function(e){
+            console.log("Chat response recieved: ",e.data)
+            try {
+                // Parse the string as JSON
+                prompts_loader.classList.add('d-none')
+    
+                const jsonData = JSON.parse(e.data);
+                if("is_first" in jsonData && jsonData.is_first){
+                    $("#chat").append(converted_to_html_user_avatar_name+`<div class="m-2">${jsonData.prompt}</div>`)
+    
+                    if(jsonData.image != null){
+                        var image_tag = document.createElement("img");
+                        image_tag.classList.add("img-fluid");
+                        image_tag.style.maxHeight = "400px";
+                        image_tag.setAttribute('src', jsonData.image)
+                    }
+                    $("#chat").append(image_tag);
+                    $("#chat").append(converted_to_html_softchat_avatar_name)
+                    var response_html = converter.makeHtml(jsonData.res)
+                    $("#chat").append(`<div id="response_${jsonData.message_id}" class="m-2">${response_html}</div>`)
                 }
-                $("#chat").append(image_tag);
-                $("#chat").append(converted_to_html_softchat_avatar_name)
-                var response_html = converter.makeHtml(jsonData.res)
-                $("#chat").append(`<div id="response_${jsonData.message_id}" class="m-2">${response_html}</div>`)
-            }
-            if("is_error" in jsonData && jsonData.is_error){
-                $("#chat").append(
-                    `
-                    <div class="border m-2 rounded m-2 p-1 alert alert-danger d-flex align-items-center" role="alert">
-                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-                        <div>
-                            ${jsonData.error_message} <a href="/chat/" class="alert-link">Reload</a>
+                if("is_error" in jsonData && jsonData.is_error){
+                    $("#chat").append(
+                        `
+                        <div class="border m-2 rounded m-2 p-1 alert alert-danger d-flex align-items-center" role="alert">
+                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                            <div>
+                                ${jsonData.error_message} <a href="/chat/" class="alert-link">Reload</a>
+                            </div>
+                            
                         </div>
-                        
-                    </div>
-                    <script>
-                        $("#chat-form").addClass("d-none");
-                    </script>
-                    `
-                )
-                submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
-                submitButton.removeAttr("disabled")
+                        <script>
+                            $("#chat-form").addClass("d-none");
+                        </script>
+                        `
+                    )
+                    submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
+                    submitButton.removeAttr("disabled")
+                }
+                if("is_on_progress" in jsonData && jsonData.is_on_progress){
+                    var response_html = converter.makeHtml(jsonData.res)
+                    $(`#response_${jsonData.message_id}`).html(response_html)
+                }
+    
+                if('is_done' in jsonData && jsonData.is_done){
+                    submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
+                    submitButton.removeAttr("disabled")
+                    $('#id_message').attr('placeholder','Enter message');
+                    $('#id_message').focus();
+                }
+                hljs.highlightAll()
+                $('#top').scrollTop($('#top')[0].scrollHeight);
+    
+                // Process the JSON data (e.g., append to a DOM element)
+            } catch (error) {
+                console.error('Error parsing JSON:', error);
+                createToast("Error occurred. It is us!", -1)
+                hljs.highlightAll()
             }
-            if("is_on_progress" in jsonData && jsonData.is_on_progress){
-                var response_html = converter.makeHtml(jsonData.res)
-                $(`#response_${jsonData.message_id}`).html(response_html)
-            }
-
-            if('is_done' in jsonData && jsonData.is_done){
-                submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
-                submitButton.removeAttr("disabled")
-                $('#id_message').attr('placeholder','Enter message');
-                $('#id_message').focus();
-            }
-            hljs.highlightAll()
-            $('#top').scrollTop($('#top')[0].scrollHeight);
-
-            // Process the JSON data (e.g., append to a DOM element)
-        } catch (error) {
-            console.error('Error parsing JSON:', error);
-            createToast("Error occurred. It is us!", -1)
-            hljs.highlightAll()
         }
+    
+        chat_socket.onclose = function(e){
+            console.log("Server closed unexpectedly!")
+        }
+    
+        // Add an event listener to the form submission
+        form.addEventListener('submit', async function(event) {
+            // Prevent the default form submission
+            $('#btn-submit').addClass('disabled');
+    
+            event.preventDefault();
+            
+            $("#prompts-loader").html("")
+    
+            submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+            submitButton.attr("disabled","disabled");
+            // Create a FormData object and populate it with form data
+            const dataForm = new FormData(form);
+    
+            var formObject = {}
+            // Function to convert file to Base64
+            function fileToBase64(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                });
+            }
+            for (let [key, value] of dataForm.entries()) {
+                if (value instanceof File && value != null && value.size > 0) {
+                    formObject[key] = await fileToBase64(value);
+                } else {
+                    formObject[key] = value;
+                }
+            }
+            $('#form')[0].reset();
+    
+            chat_socket.send(JSON.stringify({
+                'message_content': formObject
+            }))
+            console.log("formobj :", formObject)
+    
+        });
+    }catch(error){
+        createToast("Failed to create a secure connection. Try again later", -1)
+        $("#chat-container").addClass("d-none");
     }
-
-    chat_socket.onclose = function(e){
-        console.log("Server closed unexpectedly!")
-    }
-
-    // Add an event listener to the form submission
-    form.addEventListener('submit', async function(event) {
-        // Prevent the default form submission
-        $('#btn-submit').addClass('disabled');
-
-        event.preventDefault();
-        
-        $("#prompts-loader").html("")
-
-        submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
-        submitButton.attr("disabled","disabled");
-        // Create a FormData object and populate it with form data
-        const dataForm = new FormData(form);
-
-        var formObject = {}
-        // Function to convert file to Base64
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-            });
-        }
-        for (let [key, value] of dataForm.entries()) {
-            if (value instanceof File && value != null && value.size > 0) {
-                formObject[key] = await fileToBase64(value);
-            } else {
-                formObject[key] = value;
-            }
-        }
-        $('#form')[0].reset();
-
-        chat_socket.send(JSON.stringify({
-            'message_content': formObject
-        }))
-        console.log("formobj :", formObject)
-
-    });
     
 });
 
