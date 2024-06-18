@@ -144,9 +144,9 @@ $(document).ready(function(){
     var submitButton = $('#form button[type="submit"]');
 
     var chat_socket = new WebSocket(
-        'wss://'
+        'ws://'
             + window.location.host
-            + '/wss/chat/'
+            + '/ws/chat/'
             + session_id
             + '/'
     )
@@ -246,7 +246,7 @@ $(document).ready(function(){
             });
         }
         for (let [key, value] of dataForm.entries()) {
-            if (value instanceof File) {
+            if (value instanceof File && value != null && value.size > 0) {
                 formObject[key] = await fileToBase64(value);
             } else {
                 formObject[key] = value;

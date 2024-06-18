@@ -10,9 +10,11 @@ from . models import ChatHistory
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 
-genai = Model()
+
 
 class ChatConsumer(WebsocketConsumer):
+    genai = Model()
+
     def connect(self):
         
         session_id = self.scope['url_route']['kwargs'].get('session_id')
@@ -24,7 +26,7 @@ class ChatConsumer(WebsocketConsumer):
         print("Socket disconneted from session: ", self.session_id)
         if not self.get_user_from_session(self.session_id):
             try:
-                genai.text_models.pop(self.session_id)
+                self.genai.text_models.pop(self.session_id)
             except:
                 print("Model doesnt exist in dictionary")
         return super().disconnect(code)
@@ -40,22 +42,25 @@ class ChatConsumer(WebsocketConsumer):
         base_64_image = message_content.get("image")
         requested_chat_id = message_content.get("request_chat_id")
         # Retrieve the user based on the session ID
+        #print(message_content)
         user = self.get_user_from_session(requested_session_id)
         image = None
         if base_64_image:
             image_data = base64.b64decode(base_64_image.split(",")[1])
             image = image_data
+        else:
+            base_64_image = None
  
         try:
             
             if image:
                 print("has image")
-                res = genai.image_model(user.email if user else requested_session_id, image , message)        
+                res = self.genai.image_model(user.email if user else requested_session_id, image , message)        
             else:
                 print("No image")
                 if message:
-                    genai.set_chat(user.email if user else requested_session_id,[],False)
-                    res = genai.text_model(user.email if user else requested_session_id, message)  
+                    self.genai.set_chat(user.email if user else requested_session_id,[],False)
+                    res = self.genai.text_model(user.email if user else requested_session_id, message)  
                 else:
                     self.send_error("Prompt can\'t be empty!")
                     return
@@ -106,7 +111,7 @@ class ChatConsumer(WebsocketConsumer):
         except Exception as e:
             # Handle any exceptions that occur during the loop
             if prompt_content['base_64_image'] == None:
-                last_send, last_received  = genai.get_chat_model(user.email if user else prompt_content["requested_session_id"]).rewind()
+                last_send, last_received  = self.genai.get_chat_model(user.email if user else prompt_content["requested_session_id"]).rewind()
             print(f"An error occurred: {e}")
             self.send_error("Generate error! Trying reloading")
             
@@ -144,7 +149,7 @@ class ChatConsumer(WebsocketConsumer):
     def updateHistoryMessage(self, user, modelResponse, image, prompt, history_id):
         date = datetime.now().date()
         date_time = datetime.now() 
-        current_history = genai.get_chat_model(user.email).history
+        current_history = self.genai.get_chat_model(user.email).history
         new_history_id = Generator(user.email)
 
         def create_new_history():
