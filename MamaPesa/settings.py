@@ -44,7 +44,6 @@ ALLOWED_HOSTS = ['softconnect-ce8065bce25a.herokuapp.com',
 # Application definition
 
 INSTALLED_APPS = [
-    'daphne',
     'whitenoise.runserver_nostatic',
     'django.contrib.admin',
     'django.contrib.auth',

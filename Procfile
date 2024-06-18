@@ -1,1 +1,1 @@
-web: gunicorn MamaPesa.wsgi
+web: web: daphne MamaPesa.asgi:application --port $PORT --bind 0.0.0.0 -v2
