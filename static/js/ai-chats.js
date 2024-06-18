@@ -144,10 +144,11 @@ $(document).ready(function(){
     var submitButton = $('#form button[type="submit"]');
 
     try{
+        var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
         var chat_socket = new WebSocket(
-            'wss://'
+            `${ws_scheme}://`
                 + window.location.host
-                + '/wss/chat/'
+                + `/${ws_scheme}/chat/`
                 + session_id
                 + '/'
         )
