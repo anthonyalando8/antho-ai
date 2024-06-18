@@ -219,7 +219,7 @@ $(document).ready(function(){
         }
     
         chat_socket.onclose = function(e){
-            console.log("Server closed unexpectedly!")
+            console.log("Server closed unexpectedly: ", e)
         }
     
         // Add an event listener to the form submission
