@@ -144,7 +144,7 @@ $(document).ready(function(){
     var submitButton = $('#form button[type="submit"]');
 
     var chat_socket = new WebSocket(
-        'ws://'
+        'wss://'
             + window.location.host
             + '/ws/chat/'
             + session_id

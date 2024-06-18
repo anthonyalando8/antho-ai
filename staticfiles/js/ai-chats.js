@@ -144,7 +144,7 @@ $(document).ready(function(){
     var submitButton = $('#form button[type="submit"]');
 
     var chat_socket = new WebSocket(
-        'ws://'
+        'wss://'
             + window.location.host
             + '/ws/chat/'
             + session_id
@@ -168,6 +168,8 @@ $(document).ready(function(){
 
                 if(jsonData.image != null){
                     var image_tag = document.createElement("img");
+                    image_tag.classList.add("img-fluid");
+                    image_tag.style.maxHeight = "400px";
                     image_tag.setAttribute('src', jsonData.image)
                 }
                 $("#chat").append(image_tag);
