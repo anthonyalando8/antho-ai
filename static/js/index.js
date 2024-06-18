@@ -41,6 +41,7 @@ $(document).ready(function(){
         }).then(data =>{
             if (Object.keys(data).length === 0 && data.constructor === Object) {
                 console.log("Data is empty");
+                return;
             }
             let response_code = data.status_response.status_code
             let response_message = data.status_response.status_text
@@ -55,7 +56,6 @@ $(document).ready(function(){
                     $("#fa-bell-notification").addClass("fa-shake");
                     $("#btn-bell-notification").addClass("text-danger")
                     $("#notification-badge").removeClass("d-none")
-                    $("#btn-bell-notification").addClass("text-warning")
                     $("#notification-badge").text(unread_responses > 99 ? "99+": unread_responses)
                 }else{
                     $("#notification-badge").addClass("d-none")

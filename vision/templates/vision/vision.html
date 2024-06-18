@@ -2,8 +2,9 @@
 
 {% block class_active_vision %}active{% endblock %}
 {% block content %}
-<div class="h-100 w-100">
-    <div class="text-dark">
+<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+<div class="container-fluid pt-3 h-100 w-100">
+    <!-- <div class="text-dark">
         <form method="POST" action="{% url 'vision:index' %}" class="form"  id="form-vision" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="file" name="image-uploaded" accept="image/*">
@@ -31,6 +32,148 @@
                 })
             });
         });
+    </script> -->
+    <style>
+        .editable-el {
+            width: 25%;
+            min-height: 6.5em;
+            margin: 1rem 0 0 1rem;
+            background-color: #29e;
+            color: white;
+            border-radius: 0.75em;
+            padding: 4%;
+            touch-action: none;
+            user-select: none;
+            z-index: 1;
+        }
+        
+    </style>
+    <div class="h-100 w-100">
+        <div class="row h-100">
+            <div class="col-3 text-light bg-dark position-sticky">
+                <div class="row h-100">
+                    <hr>
+                    <div class="col-4 h-100">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link link-light d-flex flex-column justify-content-center" href="" id="element-footer">
+                                    <img class="img-fluid" src="https://ik.imagekit.io/anthonyalando/Soft_Connect/templates.png?updatedAt=1718101452106" height="32" width="32">
+                                    <span class="components">Templates</span>
+                                </a>
+                            </li>
+                            <hr>
+                            <li class="nav-item">
+                                <a  class="nav-link active link-light d-flex flex-column justify-content-center" href="" id="element-header">
+                                    <img class="img-fluid" src="https://ik.imagekit.io/anthonyalando/Soft_Connect/elements.png?updatedAt=1718100097332" height="32" width="32">
+                                    <div class="components">Elements</div>
+                                </a>
+                            </li>
+                            <hr>
+                            <li class="nav-item">
+                                <a  class="nav-link link-light d-flex flex-column justify-content-center" href="" id="element-body">
+                                    <img class="img-fluid" src="https://ik.imagekit.io/anthonyalando/Soft_Connect/layouts.png?updatedAt=1718101452092" height="32" width="32">
+                                    <span class="components">Layouts</span>
+                                </a>
+                            </li>
+                            <hr>
+                            
+                        </ul>
+                    </div>
+                    <div class="col-8 h-100 border-start border-dark-subtle">
+                        <ul>
+                            <li>Item 1</li>
+                            <li>Item 2</li>
+                            <li>Item 3</li>
+                            <li>Item 4</li>
+                            <li>Item 5</li>
+                        </ul>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="col-9 h-100">
+                <div class="editor-window h-100 overflow-hidden" id="editor-window">
+                    <div class="editable-el"> Draggable Element </div>
+                    <div class="editable-el"> Draggable Element </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        var editable_el = document.querySelectorAll(".editable-el")
+
+        // Function to handle dragging
+    function handleInteractions(element) {
+        interact(element)
+            .draggable({
+                modifiers: [
+                    interact.modifiers.restrictRect({
+                        restriction: 'parent',
+                        endOnly: true,
+                        }),
+                    ],
+                listeners: {
+                    start(event) {
+                        
+                        console.log(event.type, event.target);
+                    },
+                    move(event) {
+                        const computedStyle = window.getComputedStyle(element);
+                        const zIndex = computedStyle.getPropertyValue('z-index');
+                        element.style.zIndex = 1000 + parseInt(zIndex, 10);
+                        const target = event.target;
+                        const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+                        const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+                        // Update the position of the dragged element
+                        target.style.transform = `translate(${x}px, ${y}px)`;
+
+                        // Update the data attributes to track the new position
+                        target.setAttribute('data-x', x);
+                        target.setAttribute('data-y', y);
+                    },
+                    
+                }
+            })
+            .resizable({
+            edges: { top: true, left: true, bottom: true, right: true },
+            invert: 'reposition',
+            listeners: {
+            move: function (event) {
+                let { x, y } = event.target.dataset
+
+                x = (parseFloat(x) || 0) + event.deltaRect.left
+                y = (parseFloat(y) || 0) + event.deltaRect.top
+
+                Object.assign(event.target.style, {
+                width: `${event.rect.width}px`,
+                height: `${event.rect.height}px`,
+                transform: `translate(${x}px, ${y}px)`
+                })
+
+                Object.assign(event.target.dataset, { x, y })
+            }
+            }
+        })
+    }
+    // Loop through each editable element
+    editable_el.forEach(element => {
+        // Add event listener for mouse enter
+        element.addEventListener("mouseenter", function() {
+            element.classList.add("active");
+
+            handleInteractions(element);
+        });
+
+        element.addEventListener("mouseleave", function() {
+            element.classList.remove("active");
+
+            // Disable dragging
+            //interact(element).unset();
+        });
+    });
     </script>
 </div>
 {% endblock %}

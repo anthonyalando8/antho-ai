@@ -9,6 +9,7 @@ from django.core.serializers import serialize
 import json
 # Create your views here.
 def index(request):
+    session_id = str(request.session._get_or_create_session_key())
     try:
         user = request.user
         if user.is_authenticated:
@@ -59,7 +60,7 @@ def index(request):
                 else:
                     context_response = {}
                 return JsonResponse(context_response)
-        return render(request, "main/index.html", {'user':user})
+        return render(request, "main/index.html", {'user':user, 'default': {'session_id': session_id}})
     except Exception as e:
         print(e)
         return HttpResponse(str("Something went wrong!!!..."))
@@ -67,6 +68,7 @@ def index(request):
 
 
 def admin_dashboard(request):
+    session_id = str(request.session._get_or_create_session_key())
     user = request.user
     if user.is_authenticated:
         if is_user_admin(user):
@@ -75,7 +77,7 @@ def admin_dashboard(request):
                 context = {
                     "messages": inquiries
                 }
-                return render(request, 'main/admin-dashboard.html', {})
+                return render(request, 'main/admin-dashboard.html', {'user':user, 'default':{"session_id": session_id}})
             else:
                 if request.POST.get("load_seven_range"):
                     date_range = [datetime.now() - timedelta(days=i) for i in range(7)]
@@ -126,12 +128,13 @@ def admin_dashboard(request):
 
 
 def admin_get_messages(request):
+    session_id = str(request.session._get_or_create_session_key())
     user = request.user
     if user.is_authenticated:
         if is_user_admin(user):
             if request.method == 'GET':
                 
-                return render(request, 'main/admin-messages.html', {}) 
+                return render(request, 'main/admin-messages.html', {'user':user, 'default':{"session_id": session_id}}) 
             else:
                 if request.POST.get("get_messages"):
                     inquiries = InquiryMessage.objects.filter(is_responded=False)
@@ -188,7 +191,8 @@ def airtime(res):
         return HttpResponse(f"Encountered an error while sending airtime. More error details below.\n {e}")
 
 def about(request):
-    return render(request, 'main/about.html',{})
+    session_id = str(request.session._get_or_create_session_key())
+    return render(request, 'main/about.html',{'user':request.user, 'default':{'session_id':session_id}})
 
 def send_message_inquiry(user, user_email, user_name, is_urgent,message_body , context_response):
     date = datetime.now()
@@ -253,6 +257,8 @@ def reply_inquiry(user, message, message_response):
     message.inquiry_response.add(inquiry_reply)
 
 def get_user_messages_notifiction(request, context_response):
+    session_id = str(request.session._get_or_create_session_key())
+    print("notificaations_session_id", session_id)
     unread_notifications = 0
     try:
         answered_messages = InquiryMessage.objects.filter(user=request.user)

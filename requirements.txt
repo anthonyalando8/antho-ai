@@ -16,7 +16,7 @@ crispy-bootstrap5==2024.2
 cycler==0.12.1
 decorator==5.1.1
 distro==1.9.0
-Django==5.0.3
+Django
 django-crispy-forms==2.1
 dm-tree==0.1.8
 executing==2.0.1
@@ -89,3 +89,7 @@ Werkzeug==3.0.1
 wheel==0.43.0
 wrapt==1.16.0
 whitenoise==6.6.0
+daphne
+channels
+redis
+channels_redis

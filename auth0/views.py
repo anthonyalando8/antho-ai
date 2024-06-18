@@ -6,6 +6,7 @@ from django.contrib.auth import login
 # Create your views here.
 redirect_link = 'main:homepage'
 def register(request):
+    session_id = str(request.session._get_or_create_session_key())
     global redirect_link
     try:
         if request.method == "POST":
@@ -16,11 +17,12 @@ def register(request):
                 return redirect(redirect_url)
         else:
             form = RegisterForm()
-        return render(request, 'auth0/register.html',{'form':form})
+        return render(request, 'auth0/register.html',{'form':form, 'default': {'session_id':session_id}})
     except:
         return response_error_occured_refresh_page()
 
 def login_view(request):
+    session_id = str(request.session._get_or_create_session_key())
     global redirect_link
     try:
         if request.method == "POST":
@@ -33,7 +35,7 @@ def login_view(request):
         else:
             #redirect_link = request.META.get('HTTP_REFERER')
             form = AuthenticationForm()
-        return render(request, 'auth0/login.html',{'form':form})
+        return render(request, 'auth0/login.html',{'form':form, 'default':{'session_id': session_id}})
     except:
         return response_error_occured_refresh_page()
 

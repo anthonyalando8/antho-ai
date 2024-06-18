@@ -6,4 +6,5 @@ app_name = "chatbot"
 
 urlpatterns = [
     path('', views.index, name="chat"),
+    # path("<str:session_id>/", views.room, name="room"),
 ]

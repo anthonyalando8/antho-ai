@@ -137,145 +137,129 @@ $(document).ready(function(){
     });
     $("#btn_get_chats").click();
 
-    //Submit prompt logics
+
+    //create a socket connection
+
+    let session_id = $("#user_session_id").val();
+    var submitButton = $('#form button[type="submit"]');
+
+    var chat_socket = new WebSocket(
+        'ws://'
+            + window.location.host
+            + '/ws/chat/'
+            + session_id
+            + '/'
+    )
+
     const form = document.getElementById('form');
+
+    chat_socket.onopen = function(e){
+        //connected
+    }
+    chat_socket.onmessage = function(e){
+        console.log("Chat response recieved: ",e.data)
+        try {
+            // Parse the string as JSON
+            prompts_loader.classList.add('d-none')
+
+            const jsonData = JSON.parse(e.data);
+            if("is_first" in jsonData && jsonData.is_first){
+                $("#chat").append(converted_to_html_user_avatar_name+`<div class="m-2">${jsonData.prompt}</div>`)
+
+                if(jsonData.image != null){
+                    var image_tag = document.createElement("img");
+                    image_tag.setAttribute('src', jsonData.image)
+                }
+                $("#chat").append(image_tag);
+                $("#chat").append(converted_to_html_softchat_avatar_name)
+                var response_html = converter.makeHtml(jsonData.res)
+                $("#chat").append(`<div id="response_${jsonData.message_id}" class="m-2">${response_html}</div>`)
+            }
+            if("is_error" in jsonData && jsonData.is_error){
+                $("#chat").append(
+                    `
+                    <div class="border m-2 rounded m-2 p-1 alert alert-danger d-flex align-items-center" role="alert">
+                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                        <div>
+                            ${jsonData.error_message} <a href="/chat/" class="alert-link">Reload</a>
+                        </div>
+                        
+                    </div>
+                    <script>
+                        $("#chat-form").addClass("d-none");
+                    </script>
+                    `
+                )
+                submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
+                submitButton.removeAttr("disabled")
+            }
+            if("is_on_progress" in jsonData && jsonData.is_on_progress){
+                var response_html = converter.makeHtml(jsonData.res)
+                $(`#response_${jsonData.message_id}`).html(response_html)
+            }
+
+            if('is_done' in jsonData && jsonData.is_done){
+                submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
+                submitButton.removeAttr("disabled")
+                $('#id_message').attr('placeholder','Enter message');
+                $('#id_message').focus();
+            }
+            hljs.highlightAll()
+            $('#top').scrollTop($('#top')[0].scrollHeight);
+
+            // Process the JSON data (e.g., append to a DOM element)
+        } catch (error) {
+            console.error('Error parsing JSON:', error);
+            createToast("Error occurred. It is us!", -1)
+            hljs.highlightAll()
+        }
+    }
+
+    chat_socket.onclose = function(e){
+        console.log("Server closed unexpectedly!")
+    }
 
     // Add an event listener to the form submission
     form.addEventListener('submit', async function(event) {
         // Prevent the default form submission
         $('#btn-submit').addClass('disabled');
+
         event.preventDefault();
-        var submitButton = $('#form button[type="submit"]');
+        
         $("#prompts-loader").html("")
 
         submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
         submitButton.attr("disabled","disabled");
         // Create a FormData object and populate it with form data
         const dataForm = new FormData(form);
-        $('#form')[0].reset();
-        // Send a POST request using the Fetch API
-        fetch(form.getAttribute("action"), {
-            method: 'POST',
-            body: dataForm
-        })
-        .then(response => {
-            // Check if the response is a streaming response
-            if (response.body && response.body.pipeTo) {
-                // Create a new ReadableStream to read the response data
-                const stream = new ReadableStream({
-                    start(controller) {
-                        const reader = response.body.getReader();
-                        
-                        // Read chunks of data as they arrive
-                        function read() {
-                            reader.read().then(({ done, value }) => {
-                                if (done) {
-                                    submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
-                                    submitButton.removeAttr("disabled")
-                                    $('#id_message').attr('placeholder','Enter message');
-                                    $('#id_message').focus();
-                                    controller.close();
-                                    hljs.highlightAll()
-                                    return;
-                                }
-                                // Process the received data (e.g., append to a DOM element)
-                                // Convert Uint8Array to string
-                                const text = new TextDecoder().decode(value);  
-                                console.log(text)
-                                try {
-                                    // Parse the string as JSON
-                                    prompts_loader.classList.add('d-none')
 
-                                    const jsonData = JSON.parse(text);
-                                    if("is_first" in jsonData && jsonData.is_first){
-                                        $("#chat").append(converted_to_html_user_avatar_name+`<div class="m-2">${jsonData.prompt}</div>`)
-                                        $("#chat").append(converted_to_html_softchat_avatar_name)
-                                        var response_html = converter.makeHtml(jsonData.res)
-                                        $("#chat").append(`<div id="response_${jsonData.message_id}" class="m-2">${response_html}</div>`)
-                                    }
-                                    if("is_error" in jsonData && jsonData.is_error){
-                                        $("#chat").append(
-                                            `
-                                            <div class="border m-2 rounded m-2 p-1 alert alert-danger d-flex align-items-center" role="alert">
-                                                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-                                                <div>
-                                                    ${jsonData.error_message} <a href="/chat/" class="alert-link">Reload</a>
-                                                </div>
-                                                
-                                            </div>
-                                            <script>
-                                                $("#chat-form").addClass("d-none");
-                                            </script>
-                                            `
-                                        )
-                                        submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
-                                        submitButton.removeAttr("disabled")
-                                    }
-                                    if("is_on_progress" in jsonData && jsonData.is_on_progress){
-                                        var response_html = converter.makeHtml(jsonData.res)
-                                        $(`#response_${jsonData.message_id}`).html(response_html)
-                                    }
-                                    hljs.highlightAll()
-                                    $('#top').scrollTop($('#top')[0].scrollHeight);
-
-                                    // Process the JSON data (e.g., append to a DOM element)
-                                } catch (error) {
-                                    console.error('Error parsing JSON:', error);
-                                    createToast("Error occurred. It is us!", -1)
-                                    hljs.highlightAll()
-                                    controller.error(error);
-                                }
-                                // Continue reading
-                                read();
-                            }).catch(error => {
-                                console.error('Error reading response:', error);
-                                createToast("Error reading response!", -1)
-                                controller.error(error);
-                            });
-                        }
-                        
-                        // Start reading the response stream
-                        read();
-                    }
-                });
-                
-                // Pipe the response stream to another stream or process it directly
-                // For example, you can use a TransformStream to process the data
-                // stream.pipeTo(someWritableStream);
+        var formObject = {}
+        // Function to convert file to Base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+        for (let [key, value] of dataForm.entries()) {
+            if (value instanceof File) {
+                formObject[key] = await fileToBase64(value);
             } else {
-                // Handle non-streaming response (e.g., regular JSON response)
-                return response.json().then(data => {
-                    console.log('Received non-streaming data:', data);
-                });
+                formObject[key] = value;
             }
-        })
-        .catch(error => {
-            // submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
-            // submitButton.removeAttr("disabled")
-            // $('#id_message').attr('placeholder','Enter message');
-            // $('#id_message').focus();
-            console.error('Fetch error:', error);
-        });
+        }
+        $('#form')[0].reset();
+
+        chat_socket.send(JSON.stringify({
+            'message_content': formObject
+        }))
+        console.log("formobj :", formObject)
 
     });
-
-    // //create a div elements
-    // prompts.forEach((element)=>{
-    //     var element_container = document.createElement('div');
-    //     element_container.classList.add("bg-secondary", "text-white", "col-sm-12", "col-md-6", "col-xxl-3");
-    //     element_container.style.cursor = "pointer"
-    //     element_container.innerHTML = element
-    //     element_container.addEventListener("click", function(){
-    //         $("#id_message").val(element)
-    //         $('#btn-submit').click()
-    //     });
-    //     prompts_loader.appendChild(element_container)
-    // })
     
 });
-
-
-
 
 $('#id_message').on('input', function() {
     var text = $(this).val().trim(); 

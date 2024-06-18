@@ -12,7 +12,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
-
+import redis
+from urllib.parse import urlparse
 #BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,6 +21,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+redis_url = urlparse(os.environ.get('REDISCLOUD_URL'))
+# r = redis.Redis(host=redis_url.hostname, port=redis_url.port, password=redis_url.password)
+# print("Redis cloud url: ", redis_url)
 
 
 # Quick-start development settings - unsuitable for production
@@ -40,6 +44,7 @@ ALLOWED_HOSTS = ['softconnect-ce8065bce25a.herokuapp.com',
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'whitenoise.runserver_nostatic',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -160,4 +165,49 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # SECURE_SSL_REDIRECT = True
 # SESSION_COOKIE_SECURE = True
 # CSRF_COOKIE_SECURE = True
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
+ASGI_APPLICATION = "MamaPesa.asgi.application"
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [("127.0.0.1", 6379)],
+#         },
+#     },
+# }
+if os.environ.get("DEBUG", "False").lower() in ['true', '1', 't', 'yes', 'y']:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [("127.0.0.1", 6379)],
+            },
+        },
+    }
+else:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            # "CONFIG": {
+            #     "hosts": [f"redis://:{redis_url.password}@{redis_url.hostname}:{redis_url.port}/{redis_url.path.lstrip('/')}"],
+            # },
+            'LOCATION': '%s:%s' % (redis_url.hostname, redis_url.port),
+            'OPTIONS': {
+                'PASSWORD': redis_url.password,
+                'DB': 0,
+            }
+        },
+    }
+
+    # Example for using redis_cache.RedisCache if required
+    # CACHES = {
+    #     'default': {
+    #         'BACKEND': 'redis_cache.RedisCache',
+    #         'LOCATION': '%s:%s' % (redis_url.hostname, redis_url.port),
+    #         'OPTIONS': {
+    #             'PASSWORD': redis_url.password,
+    #             'DB': 0,
+    #         }
+    #     }
+    # }

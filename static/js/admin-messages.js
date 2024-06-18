@@ -184,7 +184,7 @@ $(document).ready(function(){
         table.classList.add('table-striped');
         table.classList.add('table-hover');
         var table_head = document.createElement('thead');
-        var table_row_head = document.createElement('tr');;
+        var table_row_head = document.createElement('tr');
         ["#", "Sender","Email", "Message", "Answered"].forEach(function(value){
             var th = document.createElement('th');;
             th.setAttribute('scope','col');
