@@ -1,15 +1,13 @@
 import json
 from channels.generic.websocket import WebsocketConsumer
-from django.contrib.sessions.models import Session
-from django.contrib.auth.models import User
-from . gemini_model import Model
 from main.generate_random_hashed_string import Generator
 import base64
 from datetime import datetime
-from . models import ChatHistory
 from django.core.cache import cache
-from django.core.exceptions import ObjectDoesNotExist
-
+from django.contrib.sessions.models import Session
+from django.contrib.auth.models import User
+from . gemini_model import Model
+from . models import ChatHistory
 
 
 class ChatConsumer(WebsocketConsumer):
