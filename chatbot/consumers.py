@@ -54,10 +54,8 @@ class ChatConsumer(WebsocketConsumer):
         try:
             
             if image:
-                print("has image")
                 res = self.genai.image_model(user.email if user else requested_session_id, image , message)        
             else:
-                print("No image")
                 if message:
                     self.genai.set_chat(user.email if user else requested_session_id,[],False)
                     res = self.genai.text_model(user.email if user else requested_session_id, message)  

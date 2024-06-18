@@ -145,7 +145,7 @@ $(document).ready(function(){
 
     try{
         var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-        var chat_socket = new WebSocket(
+        var chat_socket = new ReconnectingWebSocket(
             `${ws_scheme}://`
                 + window.location.host
                 + `/${ws_scheme}/chat/`
@@ -265,6 +265,7 @@ $(document).ready(function(){
     }catch(error){
         createToast("Failed to create a secure connection. Try again later", -1)
         $("#chat-container").addClass("d-none");
+        console.log("Failed to create a socket connection: ",error)
     }
     
 });

@@ -33,7 +33,7 @@ redis_url = urlparse(os.environ.get('REDISCLOUD_URL'))
 SECRET_KEY = 'django-insecure-7_0r_pc^w1p5ho9wfw3ep)u8(^grx2486f7824^_)df3dbz$^_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get("DEBUG", "True").lower() in ['true', '1', 't', 'yes', 'y']
 
 ALLOWED_HOSTS = ['softconnect-ce8065bce25a.herokuapp.com',
                  '127.0.0.1',
@@ -160,23 +160,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
-
-# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-# SECURE_SSL_REDIRECT = True
-# SESSION_COOKIE_SECURE = True
-# CSRF_COOKIE_SECURE = True
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 ASGI_APPLICATION = "MamaPesa.asgi.application"
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [("127.0.0.1", 6379)],
-#         },
-#     },
-# }
-if os.environ.get("DEBUG", "False").lower() in ['true', '1', 't', 'yes', 'y']:
+
+if DEBUG:
     CHANNEL_LAYERS = {
         "default": {
             "BACKEND": "channels_redis.core.RedisChannelLayer",
