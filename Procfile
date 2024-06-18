@@ -1,1 +1,1 @@
-web: gunicorn MamaPesa.wsgi
+web: gunicorn MamaPesa.asgi
