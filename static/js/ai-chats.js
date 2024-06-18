@@ -146,7 +146,7 @@ $(document).ready(function(){
     var chat_socket = new WebSocket(
         'wss://'
             + window.location.host
-            + '/ws/chat/'
+            + '/wss/chat/'
             + session_id
             + '/'
     )
