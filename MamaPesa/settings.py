@@ -169,30 +169,38 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 ASGI_APPLICATION = "MamaPesa.asgi.application"
 
-if DEBUG:
-    CHANNEL_LAYERS = {
+CHANNEL_LAYERS = {
         "default": {
             "BACKEND": "channels_redis.core.RedisChannelLayer",
             "CONFIG": {
-                "hosts": [("127.0.0.1", 6379)],
+                "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
             },
         },
     }
-else:
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels_redis.core.RedisChannelLayer",
-            # "CONFIG": {
-            #     "hosts": [f"redis://:{redis_url.password}@{redis_url.hostname}:{redis_url.port}/{redis_url.path.lstrip('/')}"],
-            # },
-            'LOCATION': '%s:%s' % (redis_url.hostname, redis_url.port),
-            'OPTIONS': {
-                'PASSWORD': redis_url.password,
-                "ssl_cert_reqs": None,
-                'DB': 0,
-            }
-        },
-    }
+# if DEBUG:
+#     CHANNEL_LAYERS = {
+#         "default": {
+#             "BACKEND": "channels_redis.core.RedisChannelLayer",
+#             "CONFIG": {
+#                 "hosts": [("127.0.0.1", 6379)],
+#             },
+#         },
+#     }
+# else:
+#     CHANNEL_LAYERS = {
+#         "default": {
+#             "BACKEND": "channels_redis.core.RedisChannelLayer",
+#             # "CONFIG": {
+#             #     "hosts": [f"redis://:{redis_url.password}@{redis_url.hostname}:{redis_url.port}/{redis_url.path.lstrip('/')}"],
+#             # },
+#             'LOCATION': '%s:%s' % (redis_url.hostname, redis_url.port),
+#             'OPTIONS': {
+#                 'PASSWORD': redis_url.password,
+#                 "ssl_cert_reqs": None,
+#                 'DB': 0,
+#             }
+#         },
+#     }
 
     # Example for using redis_cache.RedisCache if required
     # CACHES = {
