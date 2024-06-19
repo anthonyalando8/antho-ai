@@ -83,7 +83,6 @@ $(document).ready(function(){
                 // Check if response is empty
                 if ($.isEmptyObject(response)) {
                     console.log("Response is empty");
-                    prompts_loader.innerHTML = ""
 
                     //create a div elements
                     for (let i = prompts.length - 1; i > 0; i--) {
@@ -102,6 +101,7 @@ $(document).ready(function(){
                             });
                             prompt_container.appendChild(element_container)
                         })
+                        prompts_loader.innerHTML=""
                     prompts_loader.appendChild(prompt_container)
                     // prompts_loader.classList.add('d-block')
                     return;
@@ -159,101 +159,64 @@ $(document).ready(function(){
         });
 
     });
-    
-
 
     //create a socket connection
 
     let session_id = $("#user_session_id").val();
     var submitButton = $('#form button[type="submit"]');
 
-    try{
-        var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-        var chat_socket = new ReconnectingWebSocket(
-            `${ws_scheme}://`
-                + window.location.host
-                + `/${ws_scheme}/chat/`
-                + session_id
-                + '/'
-        )
-    
-        const form = document.getElementById('form');
-    
-        chat_socket.onopen = function(e){
-            createToast("Secure connection established.", 200)
-            $("#btn_get_chats").click();
-            $("#chat-form").removeClass("d-none");
-            setSectionHeight(get_element_height())
-        }
-        chat_socket.onmessage = function(e){
-            try {
-                // Parse the string as JSON
-                prompts_loader.classList.add('d-none')
-    
-                const jsonData = JSON.parse(e.data);
-                if("is_first" in jsonData && jsonData.is_first){
-                    $("#chat").append(converted_to_html_user_avatar_name+`<div class="m-2">${jsonData.prompt}</div>`)
-    
-                    if(jsonData.image != null){
-                        var image_tag = document.createElement("img");
-                        image_tag.classList.add("img-fluid");
-                        image_tag.style.maxHeight = "400px";
-                        image_tag.setAttribute('src', jsonData.image)
-                    }
-                    $("#chat").append(image_tag);
-                    $("#chat").append(converted_to_html_softchat_avatar_name)
-                    var response_html = converter.makeHtml(jsonData.res)
-                    $("#chat").append(`<div id="response_${jsonData.message_id}" class="m-2">${response_html}</div>`)
-                }
-                if("is_error" in jsonData && jsonData.is_error){
-                    $("#chat").append(
-                        `
-                        <div class="border m-2 rounded m-2 p-1 alert alert-danger d-flex align-items-center" role="alert">
-                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-                            <div>
-                                ${jsonData.error_message} <a href="/chat/" class="alert-link">Reload</a>
-                            </div>
-                            
-                        </div>
-                        <script>
-                            $("#chat-form").addClass("d-none");
-                        </script>
-                        `
-                    )
-                    submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
-                    submitButton.removeAttr("disabled")
-                }
-                if("is_on_progress" in jsonData && jsonData.is_on_progress){
-                    var response_html = converter.makeHtml(jsonData.res)
-                    $(`#response_${jsonData.message_id}`).html(response_html)
-                }
-    
-                if('is_done' in jsonData && jsonData.is_done){
-                    submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
-                    submitButton.removeAttr("disabled")
-                    $('#id_message').attr('placeholder','Enter message');
-                    $('#id_message').focus();
-                }
-                hljs.highlightAll()
-                $('#top').scrollTop($('#top')[0].scrollHeight);
-    
-                // Process the JSON data (e.g., append to a DOM element)
-            } catch (error) {
-                console.error('Error parsing JSON:', error);
-                createToast("Error occurred. It is us!", -1)
-                hljs.highlightAll()
+    connectWebSocket();
+    function connectWebSocket(){
+        try{
+            //check the current protocol used https or http
+            var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+            var chat_socket = new ReconnectingWebSocket(
+                `${ws_scheme}://`
+                    + window.location.host
+                    + `/${ws_scheme}/chat/`
+                    + session_id
+                    + '/',
+                    null,
+                    {maxReconnectAttempts: 5, reconnectInterval: 5550}
+            )
+            
+            chat_socket.onopen = function(e){
+                createToast("Secure connection established.", 200)
+                //retrieve user previous messages
+                $("#btn_get_chats").click();
+                //display the chat container with form
+                $("#chat-form").removeClass("d-none");
+                sendSeverMessage(chat_socket);
+                //adjust chat body height
+                setSectionHeight(get_element_height());
             }
-        }
-    
-        chat_socket.onclose = function(e){
-            createToast("Server closed! Reconnecting...", -1)
-            console.log("Server closed unexpectedly: ", e)
-        }
+
+            
+            //when a message is received from the server side
+            chat_socket.onmessage = function(e){
+                handleReceivedMessages(e.data)
+            }
         
+            chat_socket.onclose = function(e){
+                $("#chat-form").addClass("d-none");
+                //adjust chat body height
+                createToast("Server connection closed!", -1)
+                setSectionHeight(get_element_height());
+                console.log("Server closed unexpectedly: ", e)
+            }
+            
+            
+        }catch(error){
+            $("#chat-container").addClass("d-none");
+        }
+    }
+
+    function sendSeverMessage(chat_socket){
         // Add an event listener to the form submission
+        const form = document.getElementById('form');
         form.addEventListener('submit', async function(event) {
             // Prevent the default form submission
-    
+
             event.preventDefault();
             
             
@@ -291,16 +254,71 @@ $(document).ready(function(){
                 submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
                 submitButton.attr("disabled","disabled");
             }catch(error){
-                createToast("No server connection! Reload page")
+                createToast("No server connection! Reload page", -1)
             }
             
         });
-    }catch(error){
-        createToast("Failed to create a secure connection. Reconnecting...", -1)
-        $("#chat-container").addClass("d-none");
     }
 
+    function handleReceivedMessages(server_message){
+        try {
+            //hide the prompts loader
+            prompts_loader.classList.add('d-none')
+            // Parse the string as JSON
+            const jsonData = JSON.parse(server_message);
+            if("is_first" in jsonData && jsonData.is_first){
+                $("#chat").append(converted_to_html_user_avatar_name+`<div class="m-2">${jsonData.prompt}</div>`)
 
+                if(jsonData.image != null){
+                    var image_tag = document.createElement("img");
+                    image_tag.classList.add("img-fluid");
+                    image_tag.style.maxHeight = "400px";
+                    image_tag.setAttribute('src', jsonData.image)
+                }
+                $("#chat").append(image_tag);
+                $("#chat").append(converted_to_html_softchat_avatar_name)
+                var response_html = converter.makeHtml(jsonData.res)
+                $("#chat").append(`<div id="response_${jsonData.message_id}" class="m-2">${response_html}</div>`)
+            }
+            if("is_error" in jsonData && jsonData.is_error){
+                $("#chat").append(
+                    `
+                    <div class="border m-2 rounded m-2 p-1 alert alert-danger d-flex align-items-center" role="alert">
+                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                        <div>
+                            ${jsonData.error_message} <a href="/chat/" class="alert-link">Reload</a>
+                        </div>
+                        
+                    </div>
+                    <script>
+                        $("#chat-form").addClass("d-none");
+                    </script>
+                    `
+                )
+                submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
+                submitButton.removeAttr("disabled")
+            }
+            if("is_on_progress" in jsonData && jsonData.is_on_progress){
+                var response_html = converter.makeHtml(jsonData.res)
+                $(`#response_${jsonData.message_id}`).html(response_html)
+            }
+
+            if('is_done' in jsonData && jsonData.is_done){
+                submitButton.html('<i class="fa-solid fa-paper-plane"></i>');
+                submitButton.removeAttr("disabled")
+                $('#id_message').attr('placeholder','Enter message');
+                $('#id_message').focus();
+            }
+            hljs.highlightAll()
+            $('#top').scrollTop($('#top')[0].scrollHeight);
+
+            // Process the JSON data (e.g., append to a DOM element)
+        } catch (error) {
+            console.error('Error parsing JSON:', error);
+            createToast("Error appending response!", -1)
+            hljs.highlightAll()
+        }
+    }
 
     $('#top').animate({
         scrollTop: $('#top')[0].scrollHeight
@@ -337,12 +355,11 @@ $(document).ready(function(){
         $(window).resize();
     }
 
-
     $('#id_message').focus();
     adjustChatContainer();
     $("#adjust-chat-button").click(function() {
         $('#top').animate({
-        scrollTop: $('#top')[0].scrollHeight
+            scrollTop: $('#top')[0].scrollHeight
     }, 'slow');        
     });
     // Add change event listener to the input field
@@ -369,9 +386,8 @@ $(document).ready(function(){
         $('#id_message').focus();
     });
     $('#close-modal').click(function() {
-        // Trigger click event on the file input field to open file selection dialog
+        // when the modal is closed message input field achieve focus
         $('#id_message').focus();
     });
 });
-
 

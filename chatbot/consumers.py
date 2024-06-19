@@ -18,7 +18,10 @@ class ChatConsumer(WebsocketConsumer):
         session_id = self.scope['url_route']['kwargs'].get('session_id')
         print("socket connected with session id: ", session_id)
         self.session_id = session_id
-        self.accept()
+        try:
+            self.accept()
+        except:
+            print("Unable to connect websocket")
     
     def disconnect(self, code):
         print("Socket disconneted from session: ", self.session_id)
@@ -112,7 +115,7 @@ class ChatConsumer(WebsocketConsumer):
             if prompt_content['base_64_image'] == None:
                 last_send, last_received  = genai.get_chat_model(user.email if user else prompt_content["requested_session_id"]).rewind()
             print(f"An error occurred: {e}")
-            self.send_error("Generate error! Trying reloading")
+            self.send_error("Something wrong! Trying reloading")
             
             self.send(text_data=json.dumps(context))
             
