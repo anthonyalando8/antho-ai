@@ -1,22 +1,11 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
+from django.http import HttpResponse, JsonResponse
 from .forms import CreateChatForm
-from .gemini_model import Model
-from main.generate_random_hashed_string import Generator
-from datetime import datetime
 from . models import ChatHistory
 import random
 import string
 from django.core.cache import cache
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers import serialize
-import json
-from PIL import Image
-import base64
-import io
-
-genai = Model()
-
 
 def index(request):
 
@@ -37,8 +26,6 @@ def index(request):
 
                         default_chat = ChatHistory.objects.get(user=request.user, history_id=request_chat_id)
                         current_history_value = default_chat.current_history
-                        
-                        #genai.set_chat(user.email if user.is_authenticated else str(session_id),[] , True)
 
                         return JsonResponse(serialize('json', default_chat.messages_set.all()), safe=False)
 

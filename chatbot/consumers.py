@@ -61,7 +61,6 @@ class ChatConsumer(WebsocketConsumer):
                     genai.set_chat(user.email if user else requested_session_id,[],False)
                     res = genai.text_model(user.email if user else requested_session_id, message)  
                 else:
-                    self.send_error("Prompt can\'t be empty!")
                     return
                 
             prompt_content = {
