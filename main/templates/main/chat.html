@@ -67,7 +67,7 @@ bg-dark
     
     <div class="top-section position-relative"id="top">
         <div id="chat" class="text-light"></div>
-        <div class="container overflow-hidden align-items-center" id="prompts-loader"></div>
+        <div class="container overflow-hidden d-flex align-items-center justify-content-center" id="prompts-loader"></div>
 
         
         <div class="position-fixed end-0" style="bottom: 98px;">
@@ -98,7 +98,7 @@ bg-dark
          {% endif %}
     </div>
     
-    <div class="bg-transparent m-2 border rounded-pill ps-3 pe-3" id="chat-form">
+    <div class="bg-transparent d-none m-2 border rounded-pill ps-3 pe-3" id="chat-form">
         <form method="post" id="form" action="{% url 'chatbot:chat' %}" enctype="multipart/form-data">
             <input type="hidden" name="send_prompt" value="True">
             <input type="hidden" name="session_id" value="{{ default.session_id }}">

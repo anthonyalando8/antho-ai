@@ -1,5 +1,26 @@
 
 $(document).ready(function(){
+    function get_element_height() {
+        var new_height = $("#chat-form").outerHeight(true);
+        return new_height;
+    }
+
+    function setSectionHeight(new_height){
+        //return $(".top-section").height(new_height);
+        console.log("newhight:" ,new_height)
+        $(".top-section").css({
+            "height": `calc(100% - ${new_height}px)`,
+            "max-height": `calc(100% - ${new_height}px)`,
+            "min-height": `calc(100% - ${new_height}px)`
+        })
+    }
+    // Call the function once when the document is ready
+    setSectionHeight(get_element_height())
+
+    // Attach the function to the window resize event
+    $(window).resize(function(){
+        setSectionHeight(get_element_height())
+    });
     var prompts_loader = document.getElementById("prompts-loader");
     var converter = new showdown.Converter();
 
@@ -9,12 +30,15 @@ $(document).ready(function(){
     var converted_to_html_softchat_avatar_name = converter.makeHtml(`<div markdown="1" class="d-flex m-2 align-items-center flex-row my-2"><div markdown="1">![soft connect logo](${softchat_avatar} =32x32 "SoftChatAI")</div><div markdown="1" class="mx-md-3 mx-2"> **SoftChatAI**</div></div>`)
     
     var spinner = `
-        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+        <div class="spinner-grow text-light" role="status">
         <span class="visually-hidden">Loading...</span>
-        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+        </div>
+        <div class="spinner-grow text-light" role="status">
         <span class="visually-hidden">Loading...</span>
-        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+        </div>
+        <div class="spinner-grow text-light" role="status">
         <span class="visually-hidden">Loading...</span>
+        </div>
     `
     var prompts = [
         "Suggest a unique recipe for a healthy breakfast.",
@@ -44,11 +68,11 @@ $(document).ready(function(){
     ]
     var prompt_container = document.createElement("div")
     prompt_container.classList.add('row', 'g-3', "g-lg-4");
+    prompts_loader.innerHTML= spinner;
 
     $("#ai_chat_form").submit(function(event){
         event.preventDefault();
         var formData = new FormData(this);
-        prompts_loader.innerHTML= spinner;
         $.ajax({
             type: "POST",
             url: $(this).attr('action'),
@@ -119,7 +143,7 @@ $(document).ready(function(){
                     prompts_loader.innerHTML = ""
                     prompts_loader.classList.add('d-none')
 
-                    createToast("Error display recent chats!", -1)
+                    createToast("Error loading previous chat!", -1)
 
                 }
                
@@ -135,7 +159,7 @@ $(document).ready(function(){
         });
 
     });
-    $("#btn_get_chats").click();
+    
 
 
     //create a socket connection
@@ -156,10 +180,12 @@ $(document).ready(function(){
         const form = document.getElementById('form');
     
         chat_socket.onopen = function(e){
-            //connected
+            createToast("Secure connection established.", 200)
+            $("#btn_get_chats").click();
+            $("#chat-form").removeClass("d-none");
+            setSectionHeight(get_element_height())
         }
         chat_socket.onmessage = function(e){
-            console.log("Chat response recieved: ",e.data)
             try {
                 // Parse the string as JSON
                 prompts_loader.classList.add('d-none')
@@ -220,20 +246,17 @@ $(document).ready(function(){
         }
     
         chat_socket.onclose = function(e){
+            createToast("Server closed! Reconnecting...", -1)
             console.log("Server closed unexpectedly: ", e)
         }
-    
+        
         // Add an event listener to the form submission
         form.addEventListener('submit', async function(event) {
             // Prevent the default form submission
-            $('#btn-submit').addClass('disabled');
     
             event.preventDefault();
             
-            $("#prompts-loader").html("")
-    
-            submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
-            submitButton.attr("disabled","disabled");
+            
             // Create a FormData object and populate it with form data
             const dataForm = new FormData(form);
     
@@ -255,46 +278,66 @@ $(document).ready(function(){
                 }
             }
             $('#form')[0].reset();
-    
-            chat_socket.send(JSON.stringify({
-                'message_content': formObject
-            }))
-            console.log("formobj :", formObject)
-    
+            
+            try{
+                chat_socket.send(JSON.stringify({
+                    'message_content': formObject
+                }))
+
+                $("#prompts-loader").html("")
+
+                $('#btn-submit').addClass('disabled');
+
+                submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+                submitButton.attr("disabled","disabled");
+            }catch(error){
+                createToast("No server connection! Reload page")
+            }
+            
         });
     }catch(error){
-        createToast("Failed to create a secure connection. Try again later", -1)
+        createToast("Failed to create a secure connection. Reconnecting...", -1)
         $("#chat-container").addClass("d-none");
-        console.log("Failed to create a socket connection: ",error)
     }
-    
-});
 
-$('#id_message').on('input', function() {
-    var text = $(this).val().trim(); 
-    if (text === '') {
-        $('#btn-submit').addClass('disabled');
-    } else {
-        $('#btn-submit').removeClass('disabled');
-    }
-});
-function adjustChatContainer() {
-    $("#chat-container").addClass("w-75");
-    $(window).resize(function(){
-        var viewportWidth = $(window).width();
-        if (viewportWidth < 800){
-            $("#chat-container").removeClass("w-75");
-            $("#chat-container").addClass("w-100");
-        }else{
-            $("#chat-container").removeClass("w-100");
-            $("#chat-container").addClass("w-75");
+
+
+    $('#top').animate({
+        scrollTop: $('#top')[0].scrollHeight
+    }, 'slow');
+    $('#id_message').keypress(function(event) {
+        // Check if the Enter key is pressed
+        if (event.keyCode === 13 && !event.shiftKey) {
+            event.preventDefault();
+            if($("#id_message").val().length != 0)
+                $('#btn-submit').click();
         }
     });
-    $(window).resize();
-}
 
-// Call the function when the page loads
-$(document).ready(function(){
+    $('#id_message').on('input', function() {
+        var text = $(this).val().trim(); 
+        if (text === '') {
+            $('#btn-submit').addClass('disabled');
+        } else {
+            $('#btn-submit').removeClass('disabled');
+        }
+    });
+    function adjustChatContainer() {
+        $("#chat-container").addClass("w-75");
+        $(window).resize(function(){
+            var viewportWidth = $(window).width();
+            if (viewportWidth < 800){
+                $("#chat-container").removeClass("w-75");
+                $("#chat-container").addClass("w-100");
+            }else{
+                $("#chat-container").removeClass("w-100");
+                $("#chat-container").addClass("w-75");
+            }
+        });
+        $(window).resize();
+    }
+
+
     $('#id_message').focus();
     adjustChatContainer();
     $("#adjust-chat-button").click(function() {
@@ -332,41 +375,3 @@ $(document).ready(function(){
 });
 
 
-
-$(document).ready(function() {
-    $('#top').animate({
-        scrollTop: $('#top')[0].scrollHeight
-    }, 'slow');
-    $('#id_message').keypress(function(event) {
-        // Check if the Enter key is pressed
-        if (event.keyCode === 13 && !event.shiftKey) {
-            event.preventDefault();
-            if($("#id_message").val().length != 0)
-                $('#btn-submit').click();
-        }
-    });
-});
-
-$(document).ready(function() {
-    function get_element_height() {
-        var new_height = $("#chat-form").outerHeight(true);
-        return new_height;
-    }
-
-    function setSectionHeight(new_height){
-        //return $(".top-section").height(new_height);
-        console.log("newhight:" ,new_height)
-        $(".top-section").css({
-            "height": `calc(100% - ${new_height}px)`,
-            "max-height": `calc(100% - ${new_height}px)`,
-            "min-height": `calc(100% - ${new_height}px)`
-        })
-    }
-    // Call the function once when the document is ready
-    setSectionHeight(get_element_height())
-
-    // Attach the function to the window resize event
-    $(window).resize(function(){
-        setSectionHeight(get_element_height())
-    });
-});

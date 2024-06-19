@@ -6,7 +6,7 @@ import io
 class Model:
     def __init__(self) -> None:
         genai.configure(api_key="AIzaSyCOeQQMrsEc6mB1GQK3lJHV85dAd7U3Who")
-        self.model_text = genai.GenerativeModel("gemini-pro")
+        self.model_text = genai.GenerativeModel(model_name="gemini-pro")
         self.model_image = genai.GenerativeModel("gemini-1.5-flash")
         self.current_chat = []
         self.text_models = {}
