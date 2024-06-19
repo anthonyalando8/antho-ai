@@ -364,6 +364,10 @@ $(document).ready(function(){
     // Add change event listener to the input field
     $('#id_image').change(function(event) {
         var file = event.target.files[0];
+        if(file !== null){
+            submitButton.removeAttr("disabled")
+            submitButton.removeClass("disabled")
+        }
         // Create a URL for the selected file
         var imageURL = URL.createObjectURL(file);
         // Set the created URL as the src attribute of the img tag
