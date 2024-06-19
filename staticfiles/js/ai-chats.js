@@ -82,7 +82,6 @@ $(document).ready(function(){
             success: function(response){
                 // Check if response is empty
                 if ($.isEmptyObject(response)) {
-                    console.log("Response is empty");
 
                     //create a div elements
                     for (let i = prompts.length - 1; i > 0; i--) {
